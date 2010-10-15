@@ -43,7 +43,7 @@ public class World {
 		Vec2 gravity = new Vec2(0.0f, g);
 		boolean doSleep = true;
 		jboxWorld = new org.jbox2d.dynamics.World(m_worldAABB, gravity, doSleep);
-		jboxWorld.setContactListener(new ProxyContactListener());
+		jboxWorld.setContactListener(new ProxyContactListener());		
 	}
 	
 	org.jbox2d.dynamics.World getJBoxWorld() {
@@ -107,7 +107,7 @@ public class World {
 				bodyA.touch(bodyB);
 				bodyB.touch(bodyA);
 				
-				if (bodyA.touchCount(bodyA) == 1) {
+				if (bodyA.touchCount(bodyB) == 1) {
 					fireCollision(bodyA, bodyB);
 				}
 			}
@@ -126,7 +126,7 @@ public class World {
 				bodyA.untouch(bodyB);
 				bodyB.untouch(bodyA);
 				
-				if (bodyA.touchCount(bodyA) == 0) {
+				if (bodyA.touchCount(bodyB) == 0) {
 					fireSeparated(bodyA, bodyB);
 				}
 			}
