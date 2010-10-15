@@ -1,6 +1,7 @@
 package org.newdawn.fizzy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.jbox2d.collision.AABB;
 import org.jbox2d.common.Vec2;
@@ -15,6 +16,8 @@ public class World {
 	
 	private org.jbox2d.dynamics.World jboxWorld;
 	private ArrayList<Body> bodies = new ArrayList<Body>();
+	private HashMap<org.jbox2d.collision.Shape, Body> shapeMap = new HashMap<org.jbox2d.collision.Shape, Body>();
+	
 	private int iterations;
 	
 	public World(int iterations) {
@@ -44,10 +47,12 @@ public class World {
 	
 	public void add(Body body) {
 		body.addToWorld(this);
+		shapeMap.put(body.getJBoxShape(), body);
 		bodies.add(body);
 	}
 	
 	public void remove(Body body) {
+		shapeMap.remove(body.getJBoxShape());
 		body.removeFromWorld(this);
 		bodies.remove(body);
 	}

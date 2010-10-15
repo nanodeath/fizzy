@@ -73,4 +73,8 @@ public class Body {
 		jboxBody.destroyShape(jboxShape);
 		jboxWorld.destroyBody(jboxBody);
 	}
+
+	public org.jbox2d.collision.Shape getJBoxShape() {
+		return jboxShape;
+	}
 }
