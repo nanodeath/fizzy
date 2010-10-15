@@ -5,6 +5,9 @@ import java.util.HashMap;
 
 import org.jbox2d.collision.AABB;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.ContactListener;
+import org.jbox2d.dynamics.contacts.ContactPoint;
+import org.jbox2d.dynamics.contacts.ContactResult;
 
 public class World {
 	public static final float DEFAULT_GRAVITY = -10;
@@ -17,6 +20,7 @@ public class World {
 	private org.jbox2d.dynamics.World jboxWorld;
 	private ArrayList<Body> bodies = new ArrayList<Body>();
 	private HashMap<org.jbox2d.collision.Shape, Body> shapeMap = new HashMap<org.jbox2d.collision.Shape, Body>();
+	private ArrayList<WorldListener> listeners = new ArrayList<WorldListener>();
 	
 	private int iterations;
 	
@@ -39,6 +43,7 @@ public class World {
 		Vec2 gravity = new Vec2(0.0f, g);
 		boolean doSleep = true;
 		jboxWorld = new org.jbox2d.dynamics.World(m_worldAABB, gravity, doSleep);
+		jboxWorld.setContactListener(new ProxyContactListener());
 	}
 	
 	org.jbox2d.dynamics.World getJBoxWorld() {
@@ -67,5 +72,69 @@ public class World {
 	
 	public void update(float timeStep) {
 		jboxWorld.step(timeStep, iterations);
+	}
+	
+	public void addListener(WorldListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeListener(WorldListener listener) {
+		listeners.remove(listener);
+	}
+	
+	private void fireCollision(Body bodyA, Body bodyB) {
+		CollisionEvent event = new CollisionEvent(bodyA, bodyB);
+		for (int i=0;i<listeners.size();i++) {
+			listeners.get(i).collided(event);
+		}
+	}
+	
+	private void fireSeparated(Body bodyA, Body bodyB) {
+		CollisionEvent event = new CollisionEvent(bodyA, bodyB);
+		for (int i=0;i<listeners.size();i++) {
+			listeners.get(i).separated(event);
+		}	
+	}
+	
+	private class ProxyContactListener implements ContactListener {
+
+		@Override
+		public void add(ContactPoint point) {
+			Body bodyA = shapeMap.get(point.shape1);
+			Body bodyB = shapeMap.get(point.shape2);
+			
+			if ((bodyA != null) && (bodyB != null)) {
+				bodyA.touch(bodyB);
+				bodyB.touch(bodyA);
+				
+				if (bodyA.touchCount(bodyA) == 1) {
+					fireCollision(bodyA, bodyB);
+				}
+			}
+		}
+
+		@Override
+		public void persist(ContactPoint point) {
+		}
+
+		@Override
+		public void remove(ContactPoint point) {
+			Body bodyA = shapeMap.get(point.shape1);
+			Body bodyB = shapeMap.get(point.shape2);
+			
+			if ((bodyA != null) && (bodyB != null)) {
+				bodyA.untouch(bodyB);
+				bodyB.untouch(bodyA);
+				
+				if (bodyA.touchCount(bodyA) == 0) {
+					fireSeparated(bodyA, bodyB);
+				}
+			}
+		}
+
+		@Override
+		public void result(ContactResult point) {
+		}
+		
 	}
 }

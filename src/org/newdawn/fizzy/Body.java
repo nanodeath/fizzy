@@ -1,5 +1,8 @@
 package org.newdawn.fizzy;
 
+import java.util.ArrayList;
+import java.util.TreeSet;
+
 import org.jbox2d.collision.ShapeDef;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
@@ -11,6 +14,7 @@ public class Body {
 	private BodyDef jboxBodyDef;
 	private boolean staticBody;
 	private boolean addedToWorld;
+	private ArrayList<Body> touching = new ArrayList<Body>();
 	
 	public Body(Shape shape, float x, float y) {
 		this(shape,x,y,false);
@@ -21,6 +25,30 @@ public class Body {
 		jboxBodyDef.position = new Vec2(x,y);
 		jboxShapeDef = shape.getJBoxShape();
 		this.staticBody = staticBody;
+	}
+	
+	public boolean isTouching(Body other) {
+		return touching.contains(other);
+	}
+	
+	public int touchCount(Body other) {
+		int count = 0;
+		
+		for (int i=0;i<touching.size();i++) {
+			if (touching.get(i) == other) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	
+	void touch(Body other) {
+		touching.add(other);
+	}
+	
+	void untouch(Body other) {
+		touching.remove(other);
 	}
 	
 	public float getX() {
