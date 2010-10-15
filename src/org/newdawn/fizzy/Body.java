@@ -1,19 +1,32 @@
 package org.newdawn.fizzy;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
 
 import org.jbox2d.collision.ShapeDef;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
 
+/**
+ * A single body in the world. A body holds a shape which collide with
+ * the rest of the world. It also holds properties about the shapes once
+ * they have been created
+ * 
+ * @author kglass
+ */
 public class Body {
+	/** The shape held by JBox2D */
 	private org.jbox2d.collision.Shape jboxShape;
+	/** The definition of the shape held by JBox2D */
 	private ShapeDef jboxShapeDef;	
+	/** The body held by JBox2D */
 	private org.jbox2d.dynamics.Body jboxBody;
+	/** The body definition held by JBox2D */
 	private BodyDef jboxBodyDef;
+	/** True if this should be a static body */
 	private boolean staticBody;
+	/** True if the body is added to the world */
 	private boolean addedToWorld;
+	/** The list of bodies this body is touching */
 	private ArrayList<Body> touching = new ArrayList<Body>();
 	
 	public Body(Shape shape, float x, float y) {
