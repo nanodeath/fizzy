@@ -28,6 +28,8 @@ public class Body {
 	private boolean addedToWorld;
 	/** The list of bodies this body is touching */
 	private ArrayList<Body> touching = new ArrayList<Body>();
+	/** The shape used to represent this body */
+	private Shape shape;
 	
 	/**
 	 * Create a new body
@@ -53,6 +55,7 @@ public class Body {
 		jboxBodyDef.position = new Vec2(x,y);
 		jboxShapeDef = shape.getJBoxShape();
 		this.staticBody = staticBody;
+		this.shape = shape;
 	}
 	
 	/**
@@ -234,5 +237,14 @@ public class Body {
 	 */
 	org.jbox2d.collision.Shape getJBoxShape() {
 		return jboxShape;
+	}
+	
+	/**
+	 * Get the Fizzy shape representing this body
+	 * 
+	 * @return The fizzy shape representing this body
+	 */
+	public Shape getShape() {
+		return shape;
 	}
 }

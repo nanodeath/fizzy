@@ -25,12 +25,17 @@ public class World {
 	private int iterations;
 	
 	public World(int iterations) {
-		this(-DEFAULT_LEFT_BOUND,DEFAULT_TOP_BOUND,DEFAULT_RIGHT_BOUND,DEFAULT_BOTTOM_BOUND
+		this(DEFAULT_LEFT_BOUND,DEFAULT_TOP_BOUND,DEFAULT_RIGHT_BOUND,DEFAULT_BOTTOM_BOUND
 				 ,DEFAULT_GRAVITY, iterations);
 	}
 	
 	public World() {
-		this(-DEFAULT_LEFT_BOUND,DEFAULT_TOP_BOUND,DEFAULT_RIGHT_BOUND,DEFAULT_BOTTOM_BOUND
+		this(DEFAULT_LEFT_BOUND,DEFAULT_TOP_BOUND,DEFAULT_RIGHT_BOUND,DEFAULT_BOTTOM_BOUND
+			 ,DEFAULT_GRAVITY, DEFAULT_ITERATIONS);
+	}
+
+	public World(float worldWidth, float worldHeight) {
+		this(-worldWidth/2,-worldHeight/2,worldWidth/2,worldHeight/2
 			 ,DEFAULT_GRAVITY, DEFAULT_ITERATIONS);
 	}
 	
@@ -38,8 +43,8 @@ public class World {
 		this.iterations = 10;
 		
 		AABB m_worldAABB = new AABB();
-		m_worldAABB.lowerBound = new Vec2(-200.0f, -100.0f);
-		m_worldAABB.upperBound = new Vec2(200.0f, 200.0f);
+		m_worldAABB.lowerBound = new Vec2(x1, y1);
+		m_worldAABB.upperBound = new Vec2(x2, y2);
 		Vec2 gravity = new Vec2(0.0f, g);
 		boolean doSleep = true;
 		jboxWorld = new org.jbox2d.dynamics.World(m_worldAABB, gravity, doSleep);

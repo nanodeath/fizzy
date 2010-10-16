@@ -30,4 +30,8 @@ public class Circle implements Shape {
 	public ShapeDef getJBoxShape() {
 		return def;
 	}
+	
+	public float getRadius() {
+		return def.radius;
+	}
 }
