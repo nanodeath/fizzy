@@ -1,0 +1,89 @@
+package org.newdawn.fizzy.render;
+
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferStrategy;
+
+import org.newdawn.fizzy.Body;
+import org.newdawn.fizzy.Circle;
+import org.newdawn.fizzy.Rectangle;
+import org.newdawn.fizzy.Shape;
+import org.newdawn.fizzy.World;
+
+public class WorldCanvas extends Canvas {
+	private World world;
+	private boolean running;
+	
+	public WorldCanvas(World world) {
+		this.world = world;
+	}
+	
+	public void start() {
+		createBufferStrategy(2);
+		running = true;
+		runLoop();
+	}
+	
+	private void runLoop() {
+		BufferStrategy buffer = getBufferStrategy();
+		
+		while (running) {
+			world.update(0.001f);
+			
+			Graphics2D g = (Graphics2D) buffer.getDrawGraphics();
+			
+			g.clearRect(0,0,getWidth(),getHeight());
+			g.translate(getWidth()/2,getHeight()/2);
+			g.scale(1,-1);
+			for (int i=0;i<world.getBodyCount();i++) {
+				drawBody(g, world.getBody(i));
+			}
+			
+			g.dispose();
+			buffer.show();
+		}
+	}
+	
+	public void stop() {
+		running = false;
+	}
+	
+	public World getWorld() {
+		return world;
+	}
+	
+	private void drawBody(Graphics2D g, Body body) {
+		Shape shape = body.getShape();
+		if (shape instanceof Circle) {
+			drawCircle(g, body, (Circle) shape);
+		}
+		if (shape instanceof Rectangle) {
+			drawRectangle(g, body, (Rectangle) shape);
+		}
+	}
+	
+	private void drawCircle(Graphics2D g, Body body, Circle shape) {
+		g = (Graphics2D) g.create();
+		g.translate(body.getX(), body.getY());
+		g.rotate(body.getRotation());
+		
+		float radius = shape.getRadius();
+		
+		g.setColor(Color.black);
+		g.drawOval((int) -radius,(int) -radius,(int) (radius*2),(int) (radius*2));
+		g.drawLine(0,0,0,(int) -radius);
+	}
+	
+	private void drawRectangle(Graphics2D g, Body body, Rectangle shape) {
+		g = (Graphics2D) g.create();
+		g.translate(body.getX(), body.getY());
+		g.rotate(body.getRotation());
+		
+		float width = shape.getWidth();
+		float height = shape.getHeight();
+		
+		g.setColor(Color.black);
+		g.drawRect((int) -(width/2),(int) -(height/2),(int) width,(int) height);
+	}
+}
