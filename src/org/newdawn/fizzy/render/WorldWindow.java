@@ -6,10 +6,22 @@ import java.awt.event.WindowEvent;
 
 import org.newdawn.fizzy.World;
 
+/**
+ * A window to display a simulation running for debug purposes
+ * 
+ * @author kevin
+ */
 public class WorldWindow extends Frame {
+	/** The world being displayed */
 	private World world;
+	/** The canvas doing the rendering */
 	private WorldCanvas canvas;
 	
+	/**
+	 * Create a new window to display a world using AWT
+	 * 
+	 * @param world The world to be displayed
+	 */
 	public WorldWindow(World world) {
 		super("Fizzy Render Window");
 		this.world = world;
@@ -25,15 +37,25 @@ public class WorldWindow extends Frame {
 		setSize(500,500);
 	}
 	
+	/**
+	 * Start the rendering
+	 */
 	public void start() {
 		setVisible(true);
 		canvas.start();
 	}
 	
+	/**
+	 * Stop the rendering
+	 */
 	public void stop() {
 		canvas.stop();
 	}
 	
+	/**
+	 * Get the world that is currently being displayed in the render
+	 * @return
+	 */
 	public World getWorld() {
 		return world;
 	}

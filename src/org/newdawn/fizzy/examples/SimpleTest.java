@@ -7,8 +7,17 @@ import org.newdawn.fizzy.Rectangle;
 import org.newdawn.fizzy.World;
 import org.newdawn.fizzy.WorldListener;
 
+/** 
+ * A simple sanity test. Circle falls, hits rectangle, collision events are fired
+ * 
+ * @author kevin
+ */
 public class SimpleTest {
-
+	/**
+	 * Set up the test and run the simulation
+	 * 
+	 * @param argv The arguments passed to the program
+	 */
 	public static void main(String[] argv) {
 		World world = new World();
 		

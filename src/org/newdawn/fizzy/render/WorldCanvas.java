@@ -11,20 +11,38 @@ import org.newdawn.fizzy.Rectangle;
 import org.newdawn.fizzy.Shape;
 import org.newdawn.fizzy.World;
 
+/**
+ * A canvas that uses Java2D to display the world for debug
+ * 
+ * @author kevin
+ */
 public class WorldCanvas extends Canvas {
+	/** The world we're displaying */
 	private World world;
+	/** True if the simulation is running */
 	private boolean running;
 	
+	/**
+	 * Create a new canvas
+	 * 
+	 * @param world The to be displayed
+	 */
 	public WorldCanvas(World world) {
 		this.world = world;
 	}
 	
+	/** 
+	 * Start the render loop
+	 */
 	public void start() {
 		createBufferStrategy(2);
 		running = true;
 		runLoop();
 	}
 	
+	/**
+	 * The logic and render loop
+	 */
 	private void runLoop() {
 		BufferStrategy buffer = getBufferStrategy();
 		
@@ -45,14 +63,28 @@ public class WorldCanvas extends Canvas {
 		}
 	}
 	
+	/**
+	 * Stop the rendering
+	 */
 	public void stop() {
 		running = false;
 	}
 	
+	/**
+	 * Get the world being rendered
+	 * 
+	 * @return The world being renderer
+	 */
 	public World getWorld() {
 		return world;
 	}
 	
+	/**
+	 * Draw a body to the canvas
+	 * 
+	 * @param g The graphics context on which to draw
+	 * @param body The body to be rendered
+	 */
 	private void drawBody(Graphics2D g, Body body) {
 		Shape shape = body.getShape();
 		if (shape instanceof Circle) {
@@ -63,6 +95,13 @@ public class WorldCanvas extends Canvas {
 		}
 	}
 	
+	/**
+	 * Draw a body represented by a circle
+	 * 
+	 * @param g The graphics context to render to
+	 * @param body The body to be rendered
+	 * @param shape The shape representing the body
+	 */
 	private void drawCircle(Graphics2D g, Body body, Circle shape) {
 		g = (Graphics2D) g.create();
 		g.translate(body.getX(), body.getY());
@@ -75,6 +114,13 @@ public class WorldCanvas extends Canvas {
 		g.drawLine(0,0,0,(int) -radius);
 	}
 	
+	/**
+	 * Draw a body represented by a rectangle
+	 * 
+	 * @param g The graphics context on which to render
+	 * @param body The body to be rendered
+	 * @param shape The shape representing the body
+	 */
 	private void drawRectangle(Graphics2D g, Body body, Rectangle shape) {
 		g = (Graphics2D) g.create();
 		g.translate(body.getX(), body.getY());
