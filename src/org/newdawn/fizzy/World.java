@@ -108,7 +108,11 @@ public class World {
 	 */
 	public void add(Body body) {
 		body.addToWorld(this);
-		shapeMap.put(body.getJBoxShape(), body);
+		ArrayList<org.jbox2d.collision.Shape> shapes = body.getShape().getJBoxShapes();
+		
+		for (int i=0;i<shapes.size();i++) {
+			shapeMap.put(shapes.get(i), body);
+		}
 		bodies.add(body);
 	}
 
@@ -118,7 +122,11 @@ public class World {
 	 * @param body The body to be removed from the world
 	 */
 	public void remove(Body body) {
-		shapeMap.remove(body.getJBoxShape());
+		ArrayList<org.jbox2d.collision.Shape> shapes = body.getShape().getJBoxShapes();
+		
+		for (int i=0;i<shapes.size();i++) {
+			shapeMap.remove(shapes.get(i));
+		}
 		body.removeFromWorld(this);
 		bodies.remove(body);
 	}

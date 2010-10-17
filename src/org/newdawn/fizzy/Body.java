@@ -14,18 +14,12 @@ import org.jbox2d.dynamics.BodyDef;
  * @author kglass
  */
 public class Body {
-	/** The shape held by JBox2D */
-	private org.jbox2d.collision.Shape jboxShape;
-	/** The definition of the shape held by JBox2D */
-	private ShapeDef jboxShapeDef;	
 	/** The body held by JBox2D */
 	private org.jbox2d.dynamics.Body jboxBody;
 	/** The body definition held by JBox2D */
 	private BodyDef jboxBodyDef;
 	/** True if this should be a static body */
 	private boolean staticBody;
-	/** True if the body is added to the world */
-	private boolean addedToWorld;
 	/** The list of bodies this body is touching */
 	private ArrayList<Body> touching = new ArrayList<Body>();
 	/** The shape used to represent this body */
@@ -53,7 +47,6 @@ public class Body {
 	public Body(Shape shape, float x, float y, boolean staticBody) {
 		jboxBodyDef = new BodyDef();
 		jboxBodyDef.position = new Vec2(x,y);
-		jboxShapeDef = shape.getJBoxShape();
 		this.staticBody = staticBody;
 		this.shape = shape;
 	}
@@ -168,11 +161,7 @@ public class Body {
 	 * @param rest The restitution applied when this body collides
 	 */
 	public void setRestitution(float rest) {
-		if (!addedToWorld) {
-			jboxShapeDef.restitution = rest;
-		} else {
-			jboxShape.m_restitution = rest;
-		}
+		shape.setRestitution(rest);
 	}
 
 	/**
@@ -181,11 +170,7 @@ public class Body {
 	 * @param f The friction applied when this body collides
 	 */
 	public void setFriction(float f) {
-		if (!addedToWorld) {
-			jboxShapeDef.friction = f;
-		} else {
-			jboxShape.m_friction = f;
-		}
+		shape.setFriction(f);
 	}
 	
 	/**
@@ -194,11 +179,7 @@ public class Body {
 	 * @param den The density of this body
 	 */
 	public void setDensity(float den) {
-		if (!addedToWorld) {
-			jboxShapeDef.density = den;
-		} else {
-			jboxShape.m_density = den;
-		}
+		shape.setDensity(den);
 	}
 	
 	/**
@@ -207,11 +188,10 @@ public class Body {
 	 * @param world The world this body is being added to
 	 */
 	void addToWorld(World world) {
-		addedToWorld = true;
 		org.jbox2d.dynamics.World jboxWorld = world.getJBoxWorld();
 				
 		jboxBody = jboxWorld.createBody(jboxBodyDef);
-		jboxShape = jboxBody.createShape(jboxShapeDef);
+		shape.createInBody(this);
 		
 		if (!staticBody) {
 			jboxBody.setMassFromShapes();
@@ -224,19 +204,17 @@ public class Body {
 	 * @param world The world this body is being removed from
 	 */
 	void removeFromWorld(World world) {
-		addedToWorld = false;
 		org.jbox2d.dynamics.World jboxWorld = world.getJBoxWorld();
-		jboxBody.destroyShape(jboxShape);
 		jboxWorld.destroyBody(jboxBody);
 	}
-
+	
 	/**
-	 * Get the shape that represents this body's mass
+	 * Get the JBox2D body that is wrapped by this class
 	 * 
-	 * @return The shape for this body
+	 * @return The body that is wrapped by this proxy class
 	 */
-	org.jbox2d.collision.Shape getJBoxShape() {
-		return jboxShape;
+	org.jbox2d.dynamics.Body getJBoxBody() {
+		return jboxBody;
 	}
 	
 	/**

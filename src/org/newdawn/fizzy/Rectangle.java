@@ -1,16 +1,13 @@
 package org.newdawn.fizzy;
 
 import org.jbox2d.collision.PolygonDef;
-import org.jbox2d.collision.ShapeDef;
 
 /**
  * A shape implementation defining a rectangle for collision 
  * 
  * @author kevin
  */
-public class Rectangle implements Shape {
-	/** JBox2D's representation of the rectangle */
-	private PolygonDef def;
+public class Rectangle extends PrimitiveShape<PolygonDef> {
 	/** The width of the rectangle */
 	private float width;
 	/** The height of the rectangle */
@@ -59,7 +56,8 @@ public class Rectangle implements Shape {
 	 * @param friction The friction of the rectangle
 	 */
 	public Rectangle(float width, float height, float density, float restitution, float friction) {
-		def = new PolygonDef();
+		super(new PolygonDef());
+		
 		def.setAsBox(width / 2, height / 2);
 		def.density = density;
 		def.restitution = restitution;
@@ -67,11 +65,6 @@ public class Rectangle implements Shape {
 		
 		this.width = width;
 		this.height = height;
-	}
-
-	@Override
-	public ShapeDef getJBoxShape() {
-		return def;
 	}
 	
 	/**
