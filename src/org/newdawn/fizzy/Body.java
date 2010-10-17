@@ -178,7 +178,7 @@ public class Body {
 	/**
 	 * Set the friction applied when this body collides
 	 * 
-	 * @param rest The friction applied when this body collides
+	 * @param f The friction applied when this body collides
 	 */
 	public void setFriction(float f) {
 		if (!addedToWorld) {

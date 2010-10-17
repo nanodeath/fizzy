@@ -36,10 +36,10 @@ public class Circle implements Shape {
 	 * 
 	 * @param radius The radius of the circle
 	 * @param density The density of the circle
-	 * @param restitution The resitution of the circle
+	 * @param resitution The resitution of the circle
 	 */
-	public Circle(float radius, float densitiy, float resitution) {
-		this(radius, densitiy, resitution, DEFAULT_FRICTION);
+	public Circle(float radius, float density, float resitution) {
+		this(radius, density, resitution, DEFAULT_FRICTION);
 	}
 
 	/**

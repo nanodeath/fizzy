@@ -54,7 +54,8 @@ public class WorldWindow extends Frame {
 	
 	/**
 	 * Get the world that is currently being displayed in the render
-	 * @return
+	 * 
+	 * @return The world being displayed 
 	 */
 	public World getWorld() {
 		return world;

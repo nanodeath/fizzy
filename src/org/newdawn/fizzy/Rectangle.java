@@ -45,8 +45,8 @@ public class Rectangle implements Shape {
 	 * @param density The density of the rectangle
 	 * @param resitution The resitution of the rectangle
 	 */
-	public Rectangle(float width, float height, float densitiy, float resitution) {
-		this(width, height, densitiy, resitution, DEFAULT_FRICTION);
+	public Rectangle(float width, float height, float density, float resitution) {
+		this(width, height, density, resitution, DEFAULT_FRICTION);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class Rectangle implements Shape {
 	 * @param width The width of the rectangle
 	 * @param height The height of the rectangle
 	 * @param density The density of the rectangle
-	 * @param resitution The resitution of the rectangle
+	 * @param restitution The resitution of the rectangle
 	 * @param friction The friction of the rectangle
 	 */
 	public Rectangle(float width, float height, float density, float restitution, float friction) {
