@@ -123,8 +123,8 @@ public class WorldCanvas extends Canvas {
 	 */
 	private void drawRectangle(Graphics2D g, Body body, Rectangle shape) {
 		g = (Graphics2D) g.create();
-		g.translate(body.getX(), body.getY());
-		g.rotate(body.getRotation());
+		g.translate(body.getX()+shape.getXOffset(), body.getY()+shape.getYOffset());
+		g.rotate(body.getRotation()+shape.getAngleOffset());
 		
 		float width = shape.getWidth();
 		float height = shape.getHeight();
