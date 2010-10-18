@@ -7,6 +7,7 @@ import java.awt.image.BufferStrategy;
 
 import org.newdawn.fizzy.Body;
 import org.newdawn.fizzy.Circle;
+import org.newdawn.fizzy.CompoundShape;
 import org.newdawn.fizzy.Rectangle;
 import org.newdawn.fizzy.Shape;
 import org.newdawn.fizzy.World;
@@ -87,11 +88,39 @@ public class WorldCanvas extends Canvas {
 	 */
 	private void drawBody(Graphics2D g, Body body) {
 		Shape shape = body.getShape();
+		drawShape(g,body,shape);
+	}
+
+	/**
+	 * Draw a shape 
+	 * 
+	 * @param g The graphics context to render to
+	 * @param body The body to be rendered
+	 * @param shape The shape representing the body
+	 */
+	private void drawShape(Graphics2D g, Body body, Shape shape) {
 		if (shape instanceof Circle) {
 			drawCircle(g, body, (Circle) shape);
 		}
 		if (shape instanceof Rectangle) {
 			drawRectangle(g, body, (Rectangle) shape);
+		}
+		if (shape instanceof CompoundShape) {
+			drawCompound(g, body, (CompoundShape) shape);
+		}
+	}
+
+	/**
+	 * Draw a compound shape 
+	 * 
+	 * @param g The graphics context to render to
+	 * @param body The body to be rendered
+	 * @param shape The shape representing the body
+	 */
+	private void drawCompound(Graphics2D g, Body body, CompoundShape shape) {
+		int count = shape.getShapeCount();
+		for (int i=0;i<count;i++) {
+			drawShape(g, body, shape.getShape(i));
 		}
 	}
 	
@@ -123,8 +152,10 @@ public class WorldCanvas extends Canvas {
 	 */
 	private void drawRectangle(Graphics2D g, Body body, Rectangle shape) {
 		g = (Graphics2D) g.create();
-		g.translate(body.getX()+shape.getXOffset(), body.getY()+shape.getYOffset());
-		g.rotate(body.getRotation()+shape.getAngleOffset());
+		g.translate(body.getX(), body.getY());
+		g.rotate(body.getRotation());
+		g.translate(shape.getXOffset(), shape.getYOffset());
+		g.rotate(shape.getAngleOffset());
 		
 		float width = shape.getWidth();
 		float height = shape.getHeight();

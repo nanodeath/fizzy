@@ -99,6 +99,14 @@ public class Body {
 		touching.remove(other);
 	}
 	
+	public void applyForce(float x, float y) {
+		jboxBody.applyForce(new Vec2(x,y), new Vec2(0,0));
+	}
+	
+	public void setA(float v) {
+		jboxBody.applyTorque(v);
+	}
+	
 	/**
 	 * Get the X position of the body
 	 * 
@@ -224,5 +232,13 @@ public class Body {
 	 */
 	public Shape getShape() {
 		return shape;
+	}
+	
+	public void setPosition(float x, float y) {
+		jboxBody.setXForm(new Vec2(x,y), jboxBody.getAngle());
+	}
+	
+	public void setRotation(float rotation) {
+		jboxBody.setXForm(jboxBody.getPosition(), rotation);
 	}
 }

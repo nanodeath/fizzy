@@ -13,7 +13,7 @@ public class Rectangle extends PrimitiveShape<PolygonDef> {
 	private float width;
 	/** The height of the rectangle */
 	private float height;
-	/** The horinzontal axis offset */
+	/** The horizontal axis offset */
 	private float xoffset;
 	/** The vertical axis offset */
 	private float yoffset;
@@ -82,12 +82,14 @@ public class Rectangle extends PrimitiveShape<PolygonDef> {
 	 * @param x The horizontal axis offset
 	 * @param y The vertical axis offset
 	 * @param angle
+	 * @return This rectangle for chaining operations
 	 */
-	public void setOffset(float x, float y, float angle) {
+	public Rectangle setOffset(float x, float y, float angle) {
 		xoffset = x;
 		yoffset = y;
 		angleOffset = angle;
 		def.setAsBox(width / 2, height / 2, new Vec2(x,y), angle);
+		return this;
 	}
 	
 	/**
