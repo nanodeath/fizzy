@@ -19,6 +19,17 @@ public abstract class PrimitiveShape<T extends ShapeDef> implements Shape {
 	protected org.jbox2d.collision.Shape jbox2DShape;
 	/** The definition of the core shape */
 	protected T def;
+	/** The body this shape is being used in if any */
+	protected Body body;
+	
+	/**
+	 * The body this shape is being used in if any
+	 * 
+	 * @return The body this shape is being used in if any
+	 */
+	public Body getBody() {
+		return body;
+	}
 	
 	/**
 	 * Create a new primitive shape 
@@ -31,6 +42,7 @@ public abstract class PrimitiveShape<T extends ShapeDef> implements Shape {
 	
 	@Override
 	public void createInBody(Body body) {
+		this.body = body;
 		jbox2DShape = body.getJBoxBody().createShape(def);
 		jbox2DShapes.add(jbox2DShape);
 	}

@@ -18,6 +18,13 @@ public interface Shape {
 	public static final float DEFAULT_FRICTION = 0.1f;
 	
 	/**
+	 * The body this shape is being used in if any 
+	 * 
+	 * @return The body this shape is being used in if any
+ 	 */
+	Body getBody();
+	
+	/**
 	 * Create this shape against the body given
 	 * 
 	 * @param body The body to create the shape within

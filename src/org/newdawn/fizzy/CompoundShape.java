@@ -8,12 +8,20 @@ import java.util.ArrayList;
  * @author kevin
  */
 public class CompoundShape implements Shape {
+	/** The children of this compound, i.e. the shapes it's built out of */
 	private ArrayList<Shape> children = new ArrayList<Shape>();
+	/** The body this shape is being used in if any */
+	private Body body;
 	
 	/**
 	 * Create a new shape built up of a set of others
 	 */
 	public CompoundShape() {
+	}
+	
+	@Override
+	public Body getBody() {
+		return body;
 	}
 	
 	/**
