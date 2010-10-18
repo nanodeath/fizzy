@@ -24,6 +24,8 @@ public class Body {
 	private ArrayList<Body> touching = new ArrayList<Body>();
 	/** The shape used to represent this body */
 	private Shape shape;
+	/** The userdata assigned to this body if any */
+	private Object userData;
 	
 	/**
 	 * Create a new body
@@ -49,6 +51,24 @@ public class Body {
 		jboxBodyDef.position = new Vec2(x,y);
 		this.staticBody = staticBody;
 		this.shape = shape;
+	}
+	
+	/**
+	 * Get the user data assigned to this body if any
+	 * 
+	 * @return Get the user data assigned to this body (or null if none is defined);
+	 */
+	public Object getUserData() {
+		return userData;
+	}
+	
+	/**
+	 * Set the user data assigned to this body
+	 * 
+	 * @param object The user data to be assigned to this body
+	 */
+	public void setUserData(Object object) {
+		this.userData = object;
 	}
 	
 	/**
