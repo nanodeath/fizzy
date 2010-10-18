@@ -119,12 +119,15 @@ public class Body {
 		touching.remove(other);
 	}
 	
+	/**
+	 * Apply force to the body
+	 * 
+	 * @param x The amount of force on the X axis
+	 * @param y The amount of force on the Y axis
+	 */
 	public void applyForce(float x, float y) {
+		checkBody();
 		jboxBody.applyForce(new Vec2(x,y), new Vec2(0,0));
-	}
-	
-	public void setA(float v) {
-		jboxBody.applyTorque(v);
 	}
 	
 	/**
@@ -133,6 +136,7 @@ public class Body {
 	 * @return The x position of the body
 	 */
 	public float getX() {
+		checkBody();
 		return jboxBody.getPosition().x;		
 	}
 
@@ -143,6 +147,7 @@ public class Body {
 	 * @return The y position of the body
 	 */
 	public float getY() {
+		checkBody();
 		return jboxBody.getPosition().y;		
 	}
 	
@@ -152,6 +157,7 @@ public class Body {
 	 * @return The rotation of the body
 	 */
 	public float getRotation() {
+		checkBody();
 		return jboxBody.getAngle();
 	}
 
@@ -161,6 +167,7 @@ public class Body {
 	 * @return The x velocity of the body
 	 */
 	public float getXVelocity() {
+		checkBody();
 		return jboxBody.getLinearVelocity().x;		
 	}
 
@@ -171,6 +178,7 @@ public class Body {
 	 * @return The y velocity of the body
 	 */
 	public float getYVelocity() {
+		checkBody();
 		return jboxBody.getLinearVelocity().y;		
 	}
 	
@@ -180,6 +188,7 @@ public class Body {
 	 * @return The angular velocity of the body
 	 */
 	public float getAngularVelocity() {
+		checkBody();
 		return jboxBody.getAngularVelocity();
 	}
 	
@@ -254,11 +263,35 @@ public class Body {
 		return shape;
 	}
 	
+	/**
+	 * Set the position of the body. This can only be called after the body has been added
+	 * to the world.
+	 * 
+	 * @param x The new x coordinate of the body
+	 * @param y The new y coordinate of the body
+	 */
 	public void setPosition(float x, float y) {
+		checkBody();
 		jboxBody.setXForm(new Vec2(x,y), jboxBody.getAngle());
 	}
 	
+	/**
+	 * Set the rotation of the body. This can only be called after the body has been added
+	 * to the world.
+	 * 
+	 * @param rotation The new rotation of the body
+	 */
 	public void setRotation(float rotation) {
+		checkBody();
 		jboxBody.setXForm(jboxBody.getPosition(), rotation);
+	}
+	
+	/**
+	 * Check the body has been added to the world 
+	 */
+	private void checkBody() {
+		if (jboxBody == null) {
+			throw new RuntimeException("This method requires that the body has been added to the world first");
+		}
 	}
 }

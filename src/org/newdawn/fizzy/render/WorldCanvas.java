@@ -8,6 +8,7 @@ import java.awt.image.BufferStrategy;
 import org.newdawn.fizzy.Body;
 import org.newdawn.fizzy.Circle;
 import org.newdawn.fizzy.CompoundShape;
+import org.newdawn.fizzy.Polygon;
 import org.newdawn.fizzy.Rectangle;
 import org.newdawn.fizzy.Shape;
 import org.newdawn.fizzy.World;
@@ -105,6 +106,9 @@ public class WorldCanvas extends Canvas {
 		if (shape instanceof Rectangle) {
 			drawRectangle(g, body, (Rectangle) shape);
 		}
+		if (shape instanceof Polygon) {
+			drawPolygon(g, body, (Polygon) shape);
+		}
 		if (shape instanceof CompoundShape) {
 			drawCompound(g, body, (CompoundShape) shape);
 		}
@@ -162,5 +166,31 @@ public class WorldCanvas extends Canvas {
 		
 		g.setColor(Color.black);
 		g.drawRect((int) -(width/2),(int) -(height/2),(int) width,(int) height);
+	}
+	
+	/**
+	 * Draw a body represented by a polygon
+	 * 
+	 * @param g The graphics context on which to render
+	 * @param body The body to be rendered
+	 * @param shape The shape representing the body
+	 */
+	private void drawPolygon(Graphics2D g, Body body, Polygon shape) {
+		g = (Graphics2D) g.create();
+		g.translate(body.getX(), body.getY());
+		g.rotate(body.getRotation());
+		g.translate(shape.getXOffset(), shape.getYOffset());
+		g.rotate(shape.getAngleOffset());
+
+		g.setColor(Color.black);
+		for (int i=0;i<shape.getPointCount();i++) {
+			int n = i+1;
+			if (n >= shape.getPointCount()) {
+				n = 0;
+			}
+			g.drawLine((int) shape.getPointX(i), (int) shape.getPointY(i),
+					   (int) shape.getPointX(n), (int) shape.getPointY(n));
+		}
+		
 	}
 }

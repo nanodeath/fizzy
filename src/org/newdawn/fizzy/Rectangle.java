@@ -1,6 +1,5 @@
 package org.newdawn.fizzy;
 
-import org.jbox2d.collision.PolygonDef;
 import org.jbox2d.common.Vec2;
 
 /**
@@ -8,17 +7,11 @@ import org.jbox2d.common.Vec2;
  * 
  * @author kevin
  */
-public class Rectangle extends PrimitiveShape<PolygonDef> {
+public class Rectangle extends PolygonBasedShape {
 	/** The width of the rectangle */
 	private float width;
 	/** The height of the rectangle */
 	private float height;
-	/** The horizontal axis offset */
-	private float xoffset;
-	/** The vertical axis offset */
-	private float yoffset;
-	/** The angle offset */
-	private float angleOffset;
 	
 	/**
 	 * Create a new rectangle shape
@@ -63,8 +56,6 @@ public class Rectangle extends PrimitiveShape<PolygonDef> {
 	 * @param friction The friction of the rectangle
 	 */
 	public Rectangle(float width, float height, float density, float restitution, float friction) {
-		super(new PolygonDef());
-		
 		def.setAsBox(width / 2, height / 2);
 		def.density = density;
 		def.restitution = restitution;
@@ -72,51 +63,6 @@ public class Rectangle extends PrimitiveShape<PolygonDef> {
 		
 		this.width = width;
 		this.height = height;
-	}
-
-	/**
-	 * Move the rectangle away from the center of it's potential body. The rectangle will still 
-	 * be positioned based on it's center but will be offset from the body's center by the given 
-	 * value, and rotated by the angle given.
-	 * 
-	 * @param x The horizontal axis offset
-	 * @param y The vertical axis offset
-	 * @param angle
-	 * @return This rectangle for chaining operations
-	 */
-	public Rectangle setOffset(float x, float y, float angle) {
-		xoffset = x;
-		yoffset = y;
-		angleOffset = angle;
-		def.setAsBox(width / 2, height / 2, new Vec2(x,y), angle);
-		return this;
-	}
-	
-	/**
-	 * Get the horizontal axis offset from the body's center
-	 * 
-	 * @return The horizontal axis offset
-	 */
-	public float getXOffset() {
-		return xoffset;
-	}
-
-	/**
-	 * Get the vertical axis offset from the body's center
-	 * 
-	 * @return The horizontal axis offset
-	 */
-	public float getYOffset() {
-		return yoffset;
-	}
-
-	/**
-	 * Get the angle offset from the body's angle
-	 * 
-	 * @return The angle offset
-	 */
-	public float getAngleOffset() {
-		return angleOffset;
 	}
 	
 	/**
@@ -135,5 +81,10 @@ public class Rectangle extends PrimitiveShape<PolygonDef> {
 	 */
 	public float getHeight() {
 		return height;
+	}
+
+	@Override
+	protected void applyOffset(float x, float y, float angle) {
+		def.setAsBox(width/2, height/2, new Vec2(x,y), angle);
 	}
 }
