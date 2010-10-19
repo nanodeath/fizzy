@@ -49,7 +49,7 @@ public class WorldCanvas extends Canvas {
 		BufferStrategy buffer = getBufferStrategy();
 		
 		while (running) {
-			world.update(0.001f);
+			world.update(0.003f);
 			
 			Graphics2D g = (Graphics2D) buffer.getDrawGraphics();
 			
