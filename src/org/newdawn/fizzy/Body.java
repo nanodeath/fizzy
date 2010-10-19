@@ -54,6 +54,15 @@ public class Body {
 	}
 	
 	/**
+	 * Check if this body was declared as static
+	 * 
+	 * @return True if this body was declared as static
+	 */
+	public boolean isStatic() {
+		return staticBody;
+	}
+	
+	/**
 	 * Get the user data assigned to this body if any
 	 * 
 	 * @return Get the user data assigned to this body (or null if none is defined);
