@@ -156,6 +156,10 @@ public class World {
 	 * @param timeStep The amount of time to simulate
  	 */
 	public void update(float timeStep) {
+		jboxWorld.setContinuousPhysics(true);
+		jboxWorld.setPositionCorrection(true);
+		jboxWorld.setWarmStarting(true);
+		
 		jboxWorld.step(timeStep, iterations);
 	}
 	
