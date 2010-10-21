@@ -315,4 +315,50 @@ public class Body {
 		checkBody();
 		return jboxBody.isSleeping();
 	}
+
+	/**
+	 * Translate this body by the given amount
+	 * 
+	 * @param x The amount to move the body on the x axis
+	 * @param y The amount to move the body on the y axis
+	 */
+	public void translate(float x, float y) {
+		setPosition(getX()+x, getY()+y);
+	}
+
+	/**
+	 * Set the linear damping to apply to this body. Higher 
+	 * value slows the body acceleration. Maximum is 1.0
+	 * 
+	 * @param damping The amount to dampen the movement by
+	 */
+	public void setDamping(float damping) {
+		if (jboxBody == null) {
+			jboxBodyDef.linearDamping = damping;
+		}
+	}
+
+	/**
+	 * Set the linear velocity of this body
+	 * 
+	 * @param xVelocity The x component of the velocity
+	 * @param yVelocity The y component of the velocity
+	 */
+	public void setVelocity(float xVelocity, float yVelocity) {
+		checkBody();
+		Vec2 vel = jboxBody.getLinearVelocity();
+		vel.x = xVelocity;
+		vel.y = yVelocity;
+		jboxBody.setLinearVelocity(vel);
+	}
+
+	/**
+	 * Set the angular velocity (the speed at which it rotates)
+	 * 
+	 * @param vel The angular velocity to apply
+	 */
+	public void setAngularVelocity(float vel) {
+		checkBody();
+		jboxBody.setAngularVelocity(vel);
+	}
 }

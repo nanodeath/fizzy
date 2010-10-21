@@ -40,4 +40,14 @@ public class CollisionEvent {
 	public Body getBodyB() {
 		return bodyB;
 	}
+
+	/**
+	 * Check if this event relates to the given body
+	 * 
+	 * @param current The body to check
+	 * @return True if this event relates to the given body
+	 */
+	public boolean contains(Body current) {
+		return ((bodyA == current) || (bodyB == current));
+	}
 }
