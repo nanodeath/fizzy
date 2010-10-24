@@ -229,6 +229,17 @@ public class Body {
 	}
 	
 	/**
+	 * True if this body has reached the edge of the world bounds and hence
+	 * is frozen in space.
+	 * 
+	 * @return True if this body has reached the edge of the world bounds.
+	 */
+	public boolean isOutOfBounds() {
+		checkBody();
+		return jboxBody.isFrozen();
+	}
+	
+	/**
 	 * Notification that this body is being added to the world
 	 * 
 	 * @param world The world this body is being added to
