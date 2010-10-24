@@ -2,7 +2,6 @@ package org.newdawn.fizzy;
 
 import java.util.ArrayList;
 
-import org.jbox2d.collision.ShapeDef;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
 

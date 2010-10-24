@@ -1,8 +1,5 @@
 package org.newdawn.fizzy;
 
-import javax.xml.crypto.dsig.Transform;
-
-import org.jbox2d.common.Mat22;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.common.XForm;
 
