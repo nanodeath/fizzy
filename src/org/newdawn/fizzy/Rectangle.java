@@ -1,5 +1,6 @@
 package org.newdawn.fizzy;
 
+import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 
 /**
@@ -12,6 +13,7 @@ public class Rectangle extends PolygonBasedShape {
 	private float width;
 	/** The height of the rectangle */
 	private float height;
+	private PolygonShape shape;
 	
 	/**
 	 * Create a new rectangle shape
@@ -56,7 +58,10 @@ public class Rectangle extends PolygonBasedShape {
 	 * @param friction The friction of the rectangle
 	 */
 	public Rectangle(float width, float height, float density, float restitution, float friction) {
-		def.setAsBox(width / 2, height / 2);
+		super();
+		
+		def.shape = shape = new PolygonShape();
+		shape.setAsBox(width / 2, height / 2);
 		def.density = density;
 		def.restitution = restitution;
 		def.friction = friction;
@@ -85,6 +90,6 @@ public class Rectangle extends PolygonBasedShape {
 
 	@Override
 	protected void applyOffset(float x, float y, float angle) {
-		def.setAsBox(width/2, height/2, new Vec2(x,y), angle);
+		shape.setAsBox(width/2, height/2, new Vec2(x,y), angle);
 	}
 }

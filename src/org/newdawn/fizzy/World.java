@@ -3,11 +3,12 @@ package org.newdawn.fizzy;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.jbox2d.callbacks.ContactImpulse;
+import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.collision.AABB;
+import org.jbox2d.collision.Manifold;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.ContactListener;
-import org.jbox2d.dynamics.contacts.ContactPoint;
-import org.jbox2d.dynamics.contacts.ContactResult;
+import org.jbox2d.dynamics.contacts.Contact;
 
 /**
  * The central object of the simulation. The world contains the bodies (and joints) which
@@ -34,11 +35,12 @@ public class World {
 	/** The list of bodies added to the world */
 	private ArrayList<Body> bodies = new ArrayList<Body>();
 	/** A map from shapes that will be reported from collision to the bodies that own them */
-	private HashMap<org.jbox2d.collision.Shape, Body> shapeMap = new HashMap<org.jbox2d.collision.Shape, Body>();
+	private HashMap<org.jbox2d.collision.shapes.Shape, Body> shapeMap = new HashMap<org.jbox2d.collision.shapes.Shape, Body>();
 	/** The list of listeners to be notified of collision events */
 	private ArrayList<WorldListener> listeners = new ArrayList<WorldListener>();
 	/** The number of iterations to integrate over */
 	private int iterations;
+	private AABB worldAABB;
 	
 	/**
 	 * Create a new world simulation
@@ -83,12 +85,10 @@ public class World {
 	public World(float x1, float y1, float x2, float y2, float g, float iterations) {
 		this.iterations = 10;
 		
-		AABB m_worldAABB = new AABB();
-		m_worldAABB.lowerBound = new Vec2(x1, y1);
-		m_worldAABB.upperBound = new Vec2(x2, y2);
+		worldAABB = new AABB(new Vec2(x1, y1), new Vec2(x2, y2));
 		Vec2 gravity = new Vec2(0.0f, g);
 		boolean doSleep = true;
-		jboxWorld = new org.jbox2d.dynamics.World(m_worldAABB, gravity, doSleep);
+		jboxWorld = new org.jbox2d.dynamics.World(gravity, doSleep);
 		jboxWorld.setContactListener(new ProxyContactListener());		
 	}
 	
@@ -108,7 +108,7 @@ public class World {
 	 */
 	public void add(Body body) {
 		body.addToWorld(this);
-		ArrayList<org.jbox2d.collision.Shape> shapes = body.getShape().getJBoxShapes();
+		ArrayList<org.jbox2d.collision.shapes.Shape> shapes = body.getShape().getJBoxShapes();
 		
 		for (int i=0;i<shapes.size();i++) {
 			shapeMap.put(shapes.get(i), body);
@@ -122,7 +122,7 @@ public class World {
 	 * @param body The body to be removed from the world
 	 */
 	public void remove(Body body) {
-		ArrayList<org.jbox2d.collision.Shape> shapes = body.getShape().getJBoxShapes();
+		ArrayList<org.jbox2d.collision.shapes.Shape> shapes = body.getShape().getJBoxShapes();
 		
 		for (int i=0;i<shapes.size();i++) {
 			shapeMap.remove(shapes.get(i));
@@ -156,11 +156,7 @@ public class World {
 	 * @param timeStep The amount of time to simulate
  	 */
 	public void update(float timeStep) {
-		jboxWorld.setContinuousPhysics(true);
-		jboxWorld.setPositionCorrection(true);
-		jboxWorld.setWarmStarting(true);
-		
-		jboxWorld.step(timeStep, iterations);
+		jboxWorld.step(timeStep, iterations, iterations);
 	}
 	
 	/**
@@ -211,14 +207,14 @@ public class World {
 	 * A contact listener to collect effects and proxy them on to 
 	 * world listeners
 	 * 
-	 * @author kevin
+	 * @author max
 	 */
 	private class ProxyContactListener implements ContactListener {
 
 		@Override
-		public void add(ContactPoint point) {
-			Body bodyA = shapeMap.get(point.shape1);
-			Body bodyB = shapeMap.get(point.shape2);
+		public void beginContact(Contact contact) {
+			Body bodyA = shapeMap.get(contact.getFixtureA().getShape());
+			Body bodyB = shapeMap.get(contact.getFixtureB().getShape());
 			
 			if ((bodyA != null) && (bodyB != null)) {
 				bodyA.touch(bodyB);
@@ -231,13 +227,9 @@ public class World {
 		}
 
 		@Override
-		public void persist(ContactPoint point) {
-		}
-
-		@Override
-		public void remove(ContactPoint point) {
-			Body bodyA = shapeMap.get(point.shape1);
-			Body bodyB = shapeMap.get(point.shape2);
+		public void endContact(Contact contact) {
+			Body bodyA = shapeMap.get(contact.getFixtureA().getShape());
+			Body bodyB = shapeMap.get(contact.getFixtureB().getShape());
 			
 			if ((bodyA != null) && (bodyB != null)) {
 				bodyA.untouch(bodyB);
@@ -250,8 +242,10 @@ public class World {
 		}
 
 		@Override
-		public void result(ContactResult point) {
-		}
+		public void preSolve(Contact contact, Manifold oldManifold) {}
+
+		@Override
+		public void postSolve(Contact contact, ContactImpulse impulse) {}
 		
 	}
 }

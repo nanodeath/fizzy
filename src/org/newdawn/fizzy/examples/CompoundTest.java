@@ -1,5 +1,6 @@
 package org.newdawn.fizzy.examples;
 
+import org.jbox2d.common.Vec2;
 import org.newdawn.fizzy.Body;
 import org.newdawn.fizzy.CompoundShape;
 import org.newdawn.fizzy.Polygon;
@@ -42,9 +43,12 @@ public class CompoundTest extends AbstractTest {
 		
 		// get your winding right or get inverted shapes
 		Polygon spike = new Polygon();
-		spike.addPoint(10, 15);
-		spike.addPoint(0, 30);
-		spike.addPoint(-10, 15);
+		Vec2[] points = new Vec2[]{
+				new Vec2(10, 15),
+				new Vec2(0, 30),
+				new Vec2(-10, 15)
+		};
+		spike.setPoints(points);
 		shape.add(spike);
 		
 		compound = new Body(shape, -10.0f, 80.0f, false);

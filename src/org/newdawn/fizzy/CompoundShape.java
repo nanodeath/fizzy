@@ -60,8 +60,8 @@ public class CompoundShape implements Shape {
 	}
 
 	@Override
-	public ArrayList<org.jbox2d.collision.Shape> getJBoxShapes() {
-		ArrayList<org.jbox2d.collision.Shape> shapes = new ArrayList<org.jbox2d.collision.Shape>();
+	public ArrayList<org.jbox2d.collision.shapes.Shape> getJBoxShapes() {
+		ArrayList<org.jbox2d.collision.shapes.Shape> shapes = new ArrayList<org.jbox2d.collision.shapes.Shape>();
 
 		for (int i=0;i<children.size();i++) {
 			shapes.addAll(children.get(i).getJBoxShapes());

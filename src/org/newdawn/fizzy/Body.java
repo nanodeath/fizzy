@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.BodyType;
 
 /**
  * A single body in the world. A body holds a shape which collide with
@@ -17,8 +18,6 @@ public class Body {
 	private org.jbox2d.dynamics.Body jboxBody;
 	/** The body definition held by JBox2D */
 	private BodyDef jboxBodyDef;
-	/** True if this should be a static body */
-	private boolean staticBody;
 	/** The list of bodies this body is touching */
 	private ArrayList<Body> touching = new ArrayList<Body>();
 	/** The shape used to represent this body */
@@ -47,8 +46,8 @@ public class Body {
 	 */
 	public Body(Shape shape, float x, float y, boolean staticBody) {
 		jboxBodyDef = new BodyDef();
+		jboxBodyDef.type = staticBody ? BodyType.STATIC : BodyType.DYNAMIC;
 		jboxBodyDef.position = new Vec2(x,y);
-		this.staticBody = staticBody;
 		this.shape = shape;
 	}
 	
@@ -58,7 +57,7 @@ public class Body {
 	 * @return True if this body was declared as static
 	 */
 	public boolean isStatic() {
-		return staticBody;
+		return jboxBodyDef.type == BodyType.STATIC;
 	}
 	
 	/**
@@ -235,7 +234,7 @@ public class Body {
 	 */
 	public boolean isOutOfBounds() {
 		checkBody();
-		return jboxBody.isFrozen();
+		return !jboxBody.isActive();
 	}
 	
 	/**
@@ -248,12 +247,6 @@ public class Body {
 				
 		jboxBody = jboxWorld.createBody(jboxBodyDef);
 		shape.createInBody(this);
-		
-		if (!staticBody) {
-			jboxBody.setMassFromShapes();
-		} else {
-			jboxBody.m_type = org.jbox2d.dynamics.Body.e_staticType;
-		}
 	}
 
 	/**
@@ -293,7 +286,7 @@ public class Body {
 	 */
 	public void setPosition(float x, float y) {
 		checkBody();
-		jboxBody.setXForm(new Vec2(x,y), jboxBody.getAngle());
+		jboxBody.setTransform(new Vec2(x,y), jboxBody.getAngle());
 	}
 	
 	/**
@@ -304,7 +297,7 @@ public class Body {
 	 */
 	public void setRotation(float rotation) {
 		checkBody();
-		jboxBody.setXForm(jboxBody.getPosition(), rotation);
+		jboxBody.setTransform(jboxBody.getPosition(), rotation);
 	}
 	
 	/**
@@ -323,7 +316,7 @@ public class Body {
 	 */
 	public boolean isSleeping() {
 		checkBody();
-		return jboxBody.isSleeping();
+		return !jboxBody.isAwake();
 	}
 
 	/**

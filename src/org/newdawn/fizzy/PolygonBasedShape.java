@@ -1,21 +1,13 @@
 package org.newdawn.fizzy;
 
-import org.jbox2d.collision.PolygonDef;
 
-public abstract class PolygonBasedShape extends PrimitiveShape<PolygonDef> {
+public abstract class PolygonBasedShape extends PrimitiveShape {
 	/** The horizontal axis offset */
 	protected float xoffset;
 	/** The vertical axis offset */
 	protected float yoffset;
 	/** The angle offset */
 	protected float angleOffset;
-
-	/**
-	 * Create a new shape
-	 */
-	public PolygonBasedShape() {
-		super(new PolygonDef());
-	}
 	
 	/**
 	 * Move the rectangle away from the center of it's potential body. The rectangle will still 

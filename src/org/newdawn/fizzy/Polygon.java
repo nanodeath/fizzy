@@ -1,9 +1,11 @@
 package org.newdawn.fizzy;
 
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.common.XForm;
 
 public class Polygon extends PolygonBasedShape {
+	private PolygonShape shape;
 	/**
 	 * Create a new polygon shape
 	 */
@@ -44,21 +46,19 @@ public class Polygon extends PolygonBasedShape {
 	 *            The friction of the polygon
 	 */
 	public Polygon(float density, float restitution, float friction) {
+		super();
+		def.shape = shape = new PolygonShape();
 		def.density = density;
 		def.restitution = restitution;
 		def.friction = friction;
 	}
 
 	/**
-	 * Add a point to the polygon
-	 * 
-	 * @param x
-	 *            The x coordinate of the point
-	 * @param y
-	 *            The y coordinate of the point
+	 * Set all the points on the polygon.
+	 * @param points points in CCW order (as usual)
 	 */
-	public void addPoint(float x, float y) {
-		def.addVertex(new Vec2(x, y));
+	public void setPoints(Vec2[] points){
+		shape.set(points, points.length);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class Polygon extends PolygonBasedShape {
 	 * @return The number of points in the shape
 	 */
 	public int getPointCount() {
-		return def.getVertexCount();
+		return shape.getVertexCount();
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class Polygon extends PolygonBasedShape {
 	 * @return The x coordinate of the point
 	 */
 	public float getPointX(int i) {
-		return def.vertices.get(i).x;
+		return shape.getVertex(i).x;
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class Polygon extends PolygonBasedShape {
 	 * @return The y coordinate of the point
 	 */
 	public float getPointY(int i) {
-		return def.vertices.get(i).y;
+		return shape.getVertex(i).y;
 	}
 
 	/**
@@ -113,14 +113,14 @@ public class Polygon extends PolygonBasedShape {
 	
 	@Override
 	protected void applyOffset(float x, float y, float angle) {
-		final XForm xf = new XForm();
+		final Transform xf = new Transform();
 		xf.position.set(new Vec2(x, y));
 		xf.R.set(angle);
-
 		// Transform vertices and normals.
-		for (int i = 0; i < def.getVertexCount(); ++i) {
-			XForm.mulT(xf, def.vertices.get(i));
+		for (int i = 0; i < shape.getVertexCount(); ++i) {
+			Vec2 vertex = shape.getVertex(i);
+			// TODO Max: not sure this is right -- none of the examples test it.  Probably?
+			Transform.mulTransToOut(xf, vertex, vertex);
 		}
-
 	}
 }

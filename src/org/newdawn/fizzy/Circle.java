@@ -1,6 +1,6 @@
 package org.newdawn.fizzy;
 
-import org.jbox2d.collision.CircleDef;
+import org.jbox2d.collision.shapes.CircleShape;
 
 
 /** 
@@ -8,7 +8,9 @@ import org.jbox2d.collision.CircleDef;
  * 
  * @author kevin
  */
-public class Circle extends PrimitiveShape<CircleDef> {
+public class Circle extends PrimitiveShape {
+	private CircleShape shape;
+
 	/**
 	 * Create a new circle shape
 	 * 
@@ -48,9 +50,9 @@ public class Circle extends PrimitiveShape<CircleDef> {
 	 * @param friction The friction applied to the circle
 	 */
 	public Circle(float radius, float density, float restitution, float friction) {
-		super(new CircleDef());
-		
-		def.radius = radius;
+		super();
+		def.shape = shape = new CircleShape();
+		def.shape.m_radius = radius;
 		def.density = density;
 		def.restitution = restitution;
 		def.friction = friction;
@@ -62,7 +64,7 @@ public class Circle extends PrimitiveShape<CircleDef> {
 	 * @return The radius of the circle
 	 */
 	public float getRadius() {
-		return def.radius;
+		return shape.m_radius;
 	}
 
 }

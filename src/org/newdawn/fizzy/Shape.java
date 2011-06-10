@@ -57,5 +57,5 @@ public interface Shape {
 	 *
 	 * @return The shapes that build up this fizzy shape 
 	 */
-    ArrayList<org.jbox2d.collision.Shape> getJBoxShapes();
+    ArrayList<org.jbox2d.collision.shapes.Shape> getJBoxShapes();
 }
