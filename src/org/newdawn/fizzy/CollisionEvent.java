@@ -8,9 +8,9 @@ package org.newdawn.fizzy;
  */
 public class CollisionEvent {
 	/** The first body in the collision */
-	private Body bodyA;
+	private Body<?> bodyA;
 	/** The second body in the collision */
-	private Body bodyB;
+	private Body<?> bodyB;
 	
 	/**
 	 * Create a new event
@@ -18,7 +18,7 @@ public class CollisionEvent {
 	 * @param bodyA The first body in the collision
 	 * @param bodyB The second body in the collision
 	 */
-	CollisionEvent(Body bodyA, Body bodyB) {
+	CollisionEvent(Body<?> bodyA, Body<?> bodyB) {
 		this.bodyA = bodyA;
 		this.bodyB = bodyB;
 	}
@@ -28,7 +28,7 @@ public class CollisionEvent {
 	 * 
 	 * @return The first body taking part in the collision
 	 */
-	public Body getBodyA() {
+	public Body<?> getBodyA() {
 		return bodyA;
 	}
 
@@ -37,7 +37,7 @@ public class CollisionEvent {
 	 * 
 	 * @return The second body taking part in the collision
  	 */
-	public Body getBodyB() {
+	public Body<?> getBodyB() {
 		return bodyB;
 	}
 
@@ -47,7 +47,7 @@ public class CollisionEvent {
 	 * @param current The body to check
 	 * @return True if this event relates to the given body
 	 */
-	public boolean contains(Body current) {
+	public boolean contains(Body<?> current) {
 		return (bodyA == current) || (bodyB == current);
 	}
 }

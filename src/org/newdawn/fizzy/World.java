@@ -35,9 +35,9 @@ public class World {
 	/** The JBox2D world this World object is wrapping */
 	private org.jbox2d.dynamics.World jboxWorld;
 	/** The list of bodies added to the world */
-	private List<Body> bodies = new ArrayList<Body>();
+	private List<Body<?>> bodies = new ArrayList<Body<?>>();
 	/** A map from shapes that will be reported from collision to the bodies that own them */
-	private Map<org.jbox2d.collision.shapes.Shape, Body> shapeMap = new HashMap<org.jbox2d.collision.shapes.Shape, Body>();
+	private Map<org.jbox2d.collision.shapes.Shape, Body<?>> shapeMap = new HashMap<org.jbox2d.collision.shapes.Shape, Body<?>>();
 	/** The list of listeners to be notified of collision events */
 	private List<WorldListener> listeners = new ArrayList<WorldListener>();
 	/** The number of iterations to integrate over */
@@ -110,7 +110,7 @@ public class World {
 	 * 
 	 * @param body The body to be added to the world
 	 */
-	public void add(Body body) {
+	public void add(Body<?> body) {
 		body.addToWorld(this);
 		List<org.jbox2d.collision.shapes.Shape> shapes = body.getShape().getJBoxShapes();
 		
@@ -125,7 +125,7 @@ public class World {
 	 * 
 	 * @param body The body to be removed from the world
 	 */
-	public void remove(Body body) {
+	public void remove(Body<?> body) {
 		List<org.jbox2d.collision.shapes.Shape> shapes = body.getShape().getJBoxShapes();
 		
 		for (int i=0;i<shapes.size();i++) {
@@ -150,7 +150,7 @@ public class World {
 	 * @param index The index of the body to retrieve
 	 * @return The body at the given index
 	 */
-	public Body getBody(int index) {
+	public Body<?> getBody(int index) {
 		return bodies.get(index);
 	}
 	
@@ -187,7 +187,7 @@ public class World {
 	 * @param bodyA The first body in the collision
 	 * @param bodyB The second body in the collision
 	 */
-	private void fireCollision(Body bodyA, Body bodyB) {
+	private void fireCollision(Body<?> bodyA, Body<?> bodyB) {
 		CollisionEvent event = new CollisionEvent(bodyA, bodyB);
 		for (int i=0;i<listeners.size();i++) {
 			listeners.get(i).collided(event);
@@ -200,7 +200,7 @@ public class World {
 	 * @param bodyA The first body in the separation
 	 * @param bodyB The second body in the separation
 	 */
-	private void fireSeparated(Body bodyA, Body bodyB) {
+	private void fireSeparated(Body<?> bodyA, Body<?> bodyB) {
 		CollisionEvent event = new CollisionEvent(bodyA, bodyB);
 		for (int i=0;i<listeners.size();i++) {
 			listeners.get(i).separated(event);
@@ -217,8 +217,8 @@ public class World {
 
 		@Override
 		public void beginContact(Contact contact) {
-			Body bodyA = shapeMap.get(contact.getFixtureA().getShape());
-			Body bodyB = shapeMap.get(contact.getFixtureB().getShape());
+			Body<?> bodyA = shapeMap.get(contact.getFixtureA().getShape());
+			Body<?> bodyB = shapeMap.get(contact.getFixtureB().getShape());
 			
 			if ((bodyA != null) && (bodyB != null)) {
 				bodyA.touch(bodyB);
@@ -232,8 +232,8 @@ public class World {
 
 		@Override
 		public void endContact(Contact contact) {
-			Body bodyA = shapeMap.get(contact.getFixtureA().getShape());
-			Body bodyB = shapeMap.get(contact.getFixtureB().getShape());
+			Body<?> bodyA = shapeMap.get(contact.getFixtureA().getShape());
+			Body<?> bodyB = shapeMap.get(contact.getFixtureB().getShape());
 			
 			if ((bodyA != null) && (bodyB != null)) {
 				bodyA.untouch(bodyB);

@@ -22,14 +22,14 @@ public abstract class PrimitiveShape implements Shape {
 	/** The definition of the core shape */
 	protected FixtureDef def;
 	/** The body this shape is being used in if any */
-	protected Body body;
+	protected Body<?> body;
 	
 	/**
 	 * The body this shape is being used in if any
 	 * 
 	 * @return The body this shape is being used in if any
 	 */
-	public Body getBody() {
+	public Body<?> getBody() {
 		return body;
 	}
 	
@@ -43,7 +43,7 @@ public abstract class PrimitiveShape implements Shape {
 	}
 	
 	@Override
-	public void createInBody(Body body) {
+	public void createInBody(Body<?> body) {
 		this.body = body;
 		jbox2DFixture = body.getJBoxBody().createFixture(def);
 		jbox2DShapes.add(def.shape);

@@ -22,14 +22,14 @@ public interface Shape {
 	 * 
 	 * @return The body this shape is being used in if any
  	 */
-	Body getBody();
+	Body<?> getBody();
 	
 	/**
 	 * Create this shape against the body given
 	 * 
 	 * @param body The body to create the shape within
 	 */
-	void createInBody(Body body);
+	void createInBody(Body<?> body);
 	
 	/**
 	 * Set the restitution applied to this shape

@@ -5,26 +5,27 @@ import java.util.List;
 
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
 
 /**
  * A single body in the world. A body holds a shape which collide with
  * the rest of the world. It also holds properties about the shapes once
- * they have been created
+ * they have been created.
+ * 
+ * The generic T represents the type of the userData.
  * 
  * @author kglass
  */
-public class Body {
+abstract public class Body<T> {
 	/** The body held by JBox2D */
-	private org.jbox2d.dynamics.Body jboxBody;
+	protected org.jbox2d.dynamics.Body jboxBody;
 	/** The body definition held by JBox2D */
-	private BodyDef jboxBodyDef;
+	protected BodyDef jboxBodyDef;
 	/** The list of bodies this body is touching */
-	private List<Body> touching = new ArrayList<Body>();
+	private List<Body<?>> touching = new ArrayList<Body<?>>();
 	/** The shape used to represent this body */
 	private Shape shape;
 	/** The userdata assigned to this body if any */
-	private Object userData;
+	private T userData;
 	
 	/**
 	 * Create a new body
@@ -34,20 +35,7 @@ public class Body {
 	 * @param y The y axis location of the body
 	 */
 	public Body(Shape shape, float x, float y) {
-		this(shape,x,y,false);
-	}
-
-	/**
-	 * Create a new body
-	 * 
-	 * @param shape The shape the body should have
-	 * @param x The x axis location of the body
-	 * @param y The y axis location of the body
-	 * @param staticBody True if this body should be static
-	 */
-	public Body(Shape shape, float x, float y, boolean staticBody) {
 		jboxBodyDef = new BodyDef();
-		jboxBodyDef.type = staticBody ? BodyType.STATIC : BodyType.DYNAMIC;
 		jboxBodyDef.position = new Vec2(x,y);
 		this.shape = shape;
 	}
@@ -58,7 +46,7 @@ public class Body {
 	 * @return True if this body was declared as static
 	 */
 	public boolean isStatic() {
-		return jboxBodyDef.type == BodyType.STATIC;
+		return false;
 	}
 	
 	/**
@@ -66,7 +54,7 @@ public class Body {
 	 * 
 	 * @return Get the user data assigned to this body (or null if none is defined);
 	 */
-	public Object getUserData() {
+	public T getUserData() {
 		return userData;
 	}
 	
@@ -75,7 +63,7 @@ public class Body {
 	 * 
 	 * @param object The user data to be assigned to this body
 	 */
-	public void setUserData(Object object) {
+	public void setUserData(T object) {
 		this.userData = object;
 	}
 	
@@ -85,7 +73,7 @@ public class Body {
 	 * @param other The other body to check against 
 	 * @return True if the bodies are touching
 	 */
-	public boolean isTouching(Body other) {
+	public boolean isTouching(Body<?> other) {
 		return touching.contains(other);
 	}
 	
@@ -95,10 +83,10 @@ public class Body {
 	 * @param other The other body to check against
 	 * @return The number of contact points
 	 */
-	public int touchCount(Body other) {
+	public int touchCount(Body<?> other) {
 		int count = 0;
 		
-		for(Body touched : touching){
+		for(Body<?> touched : touching){
 			if(touched == other){
 				count++;
 			}
@@ -113,7 +101,7 @@ public class Body {
 	 * 
 	 * @param other The other body that is touched
 	 */
-	void touch(Body other) {
+	void touch(Body<?> other) {
 		touching.add(other);
 	}
 	
@@ -123,7 +111,7 @@ public class Body {
 	 * @param other The other body that is no longer touched by a particular 
 	 * contact point.
 	 */
-	void untouch(Body other) {
+	void untouch(Body<?> other) {
 		touching.remove(other);
 	}
 	
@@ -134,7 +122,7 @@ public class Body {
 	 * @param y The amount of force on the Y axis
 	 */
 	public void applyForce(float x, float y) {
-		checkBody();
+		assertBodyAttached();
 		jboxBody.applyForce(new Vec2(x,y), new Vec2(0,0));
 	}
 	
@@ -144,7 +132,7 @@ public class Body {
 	 * @return The x position of the body
 	 */
 	public float getX() {
-		checkBody();
+		assertBodyAttached();
 		return jboxBody.getPosition().x;		
 	}
 
@@ -155,7 +143,7 @@ public class Body {
 	 * @return The y position of the body
 	 */
 	public float getY() {
-		checkBody();
+		assertBodyAttached();
 		return jboxBody.getPosition().y;		
 	}
 	
@@ -165,7 +153,7 @@ public class Body {
 	 * @return The rotation of the body
 	 */
 	public float getRotation() {
-		checkBody();
+		assertBodyAttached();
 		return jboxBody.getAngle();
 	}
 
@@ -175,7 +163,7 @@ public class Body {
 	 * @return The x velocity of the body
 	 */
 	public float getXVelocity() {
-		checkBody();
+		assertBodyAttached();
 		return jboxBody.getLinearVelocity().x;		
 	}
 
@@ -186,7 +174,7 @@ public class Body {
 	 * @return The y velocity of the body
 	 */
 	public float getYVelocity() {
-		checkBody();
+		assertBodyAttached();
 		return jboxBody.getLinearVelocity().y;		
 	}
 	
@@ -196,7 +184,7 @@ public class Body {
 	 * @return The angular velocity of the body
 	 */
 	public float getAngularVelocity() {
-		checkBody();
+		assertBodyAttached();
 		return jboxBody.getAngularVelocity();
 	}
 	
@@ -234,7 +222,7 @@ public class Body {
 	 * @return True if this body has reached the edge of the world bounds.
 	 */
 	public boolean isOutOfBounds() {
-		checkBody();
+		assertBodyAttached();
 		return !jboxBody.isActive();
 	}
 	
@@ -286,7 +274,7 @@ public class Body {
 	 * @param y The new y coordinate of the body
 	 */
 	public void setPosition(float x, float y) {
-		checkBody();
+		assertBodyAttached();
 		jboxBody.setTransform(new Vec2(x,y), jboxBody.getAngle());
 	}
 	
@@ -297,16 +285,16 @@ public class Body {
 	 * @param rotation The new rotation of the body
 	 */
 	public void setRotation(float rotation) {
-		checkBody();
+		assertBodyAttached();
 		jboxBody.setTransform(jboxBody.getPosition(), rotation);
 	}
 	
 	/**
 	 * Check the body has been added to the world 
 	 */
-	private void checkBody() {
+	private void assertBodyAttached() {
 		if (jboxBody == null) {
-			throw new NotAddedToWorldException();
+			throw new NotAttachedToWorldException();
 		}
 	}
 
@@ -316,7 +304,7 @@ public class Body {
 	 * @return True if this body is sleeping
 	 */
 	public boolean isSleeping() {
-		checkBody();
+		assertBodyAttached();
 		return !jboxBody.isAwake();
 	}
 
@@ -332,14 +320,13 @@ public class Body {
 
 	/**
 	 * Set the linear damping to apply to this body. Higher 
-	 * value slows the body acceleration. Maximum is 1.0
+	 * value slows the body acceleration. Maximum is 1.0.
 	 * 
 	 * @param damping The amount to dampen the movement by
 	 */
 	public void setDamping(float damping) {
-		if (jboxBody == null) {
-			jboxBodyDef.linearDamping = damping;
-		}
+		if (jboxBody != null) throw new AlreadyAddedToWorldException();
+		jboxBodyDef.linearDamping = damping;
 	}
 
 	/**
@@ -349,7 +336,7 @@ public class Body {
 	 * @param yVelocity The y component of the velocity
 	 */
 	public void setVelocity(float xVelocity, float yVelocity) {
-		checkBody();
+		assertBodyAttached();
 		Vec2 vel = jboxBody.getLinearVelocity();
 		vel.x = xVelocity;
 		vel.y = yVelocity;
@@ -362,7 +349,7 @@ public class Body {
 	 * @param vel The angular velocity to apply
 	 */
 	public void setAngularVelocity(float vel) {
-		checkBody();
+		assertBodyAttached();
 		jboxBody.setAngularVelocity(vel);
 	}
 }

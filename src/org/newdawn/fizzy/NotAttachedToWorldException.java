@@ -1,7 +1,7 @@
 package org.newdawn.fizzy;
 
 @SuppressWarnings("serial")
-public class NotAddedToWorldException extends RuntimeException {
+public class NotAttachedToWorldException extends RuntimeException {
 
 	@Override
 	public String getMessage() {

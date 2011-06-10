@@ -12,7 +12,7 @@ public class CompoundShape implements Shape {
 	/** The children of this compound, i.e. the shapes it's built out of */
 	private List<Shape> children = new ArrayList<Shape>();
 	/** The body this shape is being used in if any */
-	private Body body;
+	private Body<?> body;
 	
 	/**
 	 * Create a new shape built up of a set of others
@@ -21,7 +21,7 @@ public class CompoundShape implements Shape {
 	}
 	
 	@Override
-	public Body getBody() {
+	public Body<?> getBody() {
 		return body;
 	}
 	
@@ -54,7 +54,7 @@ public class CompoundShape implements Shape {
 	}
 	
 	@Override
-	public void createInBody(Body body) {
+	public void createInBody(Body<?> body) {
 		for(Shape child : children){
 			child.createInBody(body);
 		}
