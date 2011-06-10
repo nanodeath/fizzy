@@ -2,6 +2,8 @@ package org.newdawn.fizzy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
@@ -18,28 +20,30 @@ import org.jbox2d.dynamics.contacts.Contact;
  */
 public class World {
 	/** The default gravity applied if none is specified (-10) */
-	public static final float DEFAULT_GRAVITY = -10;
+	public static final float DEFAULT_GRAVITY = -10f;
 	/** The default left hand bound of the physics world if none is specified (-200) */
-	public static final float DEFAULT_LEFT_BOUND = -200;
+	public static final float DEFAULT_LEFT_BOUND = -200f;
 	/** The default right hand bound of the physics world if none is specified (200) */
-	public static final float DEFAULT_RIGHT_BOUND = 200;
+	public static final float DEFAULT_RIGHT_BOUND = 200f;
 	/** The default top bound of the physics world if none is specified (-200) */
-	public static final float DEFAULT_TOP_BOUND = -200;
+	public static final float DEFAULT_TOP_BOUND = -200f;
 	/** The default bottom bound of the physics world if none is specified (200) */
-	public static final float DEFAULT_BOTTOM_BOUND = 200;
+	public static final float DEFAULT_BOTTOM_BOUND = 200f;
 	/** The default number of iteration used in the integration if none specified (10) */
-	public static final float DEFAULT_ITERATIONS = 10;
+	public static final float DEFAULT_ITERATIONS = 10f;
 	
 	/** The JBox2D world this World object is wrapping */
 	private org.jbox2d.dynamics.World jboxWorld;
 	/** The list of bodies added to the world */
-	private ArrayList<Body> bodies = new ArrayList<Body>();
+	private List<Body> bodies = new ArrayList<Body>();
 	/** A map from shapes that will be reported from collision to the bodies that own them */
-	private HashMap<org.jbox2d.collision.shapes.Shape, Body> shapeMap = new HashMap<org.jbox2d.collision.shapes.Shape, Body>();
+	private Map<org.jbox2d.collision.shapes.Shape, Body> shapeMap = new HashMap<org.jbox2d.collision.shapes.Shape, Body>();
 	/** The list of listeners to be notified of collision events */
-	private ArrayList<WorldListener> listeners = new ArrayList<WorldListener>();
+	private List<WorldListener> listeners = new ArrayList<WorldListener>();
 	/** The number of iterations to integrate over */
 	private int iterations;
+	// TODO Max: not used at the moment -- used to be passed in to the JBox2D world constructor...
+	@SuppressWarnings("unused")
 	private AABB worldAABB;
 	
 	/**
@@ -50,7 +54,7 @@ public class World {
 	 */
 	public World(int iterations) {
 		this(DEFAULT_LEFT_BOUND,DEFAULT_TOP_BOUND,DEFAULT_RIGHT_BOUND,DEFAULT_BOTTOM_BOUND
-				 ,DEFAULT_GRAVITY, iterations);
+				 , DEFAULT_GRAVITY, iterations);
 	}
 	
 	/**
@@ -58,7 +62,7 @@ public class World {
 	 */
 	public World() {
 		this(DEFAULT_LEFT_BOUND,DEFAULT_TOP_BOUND,DEFAULT_RIGHT_BOUND,DEFAULT_BOTTOM_BOUND
-			 ,DEFAULT_GRAVITY, DEFAULT_ITERATIONS);
+			 , DEFAULT_GRAVITY, DEFAULT_ITERATIONS);
 	}
 
 	/**
@@ -69,7 +73,7 @@ public class World {
 	 */
 	public World(float worldWidth, float worldHeight) {
 		this(-worldWidth/2,-worldHeight/2,worldWidth/2,worldHeight/2
-			 ,DEFAULT_GRAVITY, DEFAULT_ITERATIONS);
+			 , DEFAULT_GRAVITY, DEFAULT_ITERATIONS);
 	}
 	
 	/**
@@ -108,7 +112,7 @@ public class World {
 	 */
 	public void add(Body body) {
 		body.addToWorld(this);
-		ArrayList<org.jbox2d.collision.shapes.Shape> shapes = body.getShape().getJBoxShapes();
+		List<org.jbox2d.collision.shapes.Shape> shapes = body.getShape().getJBoxShapes();
 		
 		for (int i=0;i<shapes.size();i++) {
 			shapeMap.put(shapes.get(i), body);
@@ -122,7 +126,7 @@ public class World {
 	 * @param body The body to be removed from the world
 	 */
 	public void remove(Body body) {
-		ArrayList<org.jbox2d.collision.shapes.Shape> shapes = body.getShape().getJBoxShapes();
+		List<org.jbox2d.collision.shapes.Shape> shapes = body.getShape().getJBoxShapes();
 		
 		for (int i=0;i<shapes.size();i++) {
 			shapeMap.remove(shapes.get(i));

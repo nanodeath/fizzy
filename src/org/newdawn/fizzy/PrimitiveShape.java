@@ -1,8 +1,8 @@
 package org.newdawn.fizzy;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 
@@ -16,7 +16,7 @@ import org.jbox2d.dynamics.FixtureDef;
  */
 public abstract class PrimitiveShape implements Shape {
 	/** The array list that contains this shape */
-	protected ArrayList<org.jbox2d.collision.shapes.Shape> jbox2DShapes = new ArrayList<org.jbox2d.collision.shapes.Shape>();
+	protected List<org.jbox2d.collision.shapes.Shape> jbox2DShapes = new ArrayList<org.jbox2d.collision.shapes.Shape>();
 	/** The primitive shape that represent this fizzy fixture */
 	protected Fixture jbox2DFixture;
 	/** The definition of the core shape */
@@ -50,7 +50,7 @@ public abstract class PrimitiveShape implements Shape {
 	}
 
 	@Override
-	public ArrayList<org.jbox2d.collision.shapes.Shape> getJBoxShapes() {
+	public List<org.jbox2d.collision.shapes.Shape> getJBoxShapes() {
 		return jbox2DShapes;
 	}
 

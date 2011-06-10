@@ -11,6 +11,7 @@ import org.newdawn.fizzy.World;
  * 
  * @author kevin
  */
+@SuppressWarnings("serial")
 public class WorldWindow extends Frame {
 	/** The world being displayed */
 	private World world;

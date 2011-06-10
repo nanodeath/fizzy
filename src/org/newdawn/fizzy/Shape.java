@@ -1,9 +1,9 @@
 package org.newdawn.fizzy;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Decription of any class representing a shape for collision. The shape 
+ * Description of any class representing a shape for collision. The shape 
  * both defines the geometry and the collision properties. However, these
  * can be augmented at the Body level.
  * 
@@ -41,14 +41,14 @@ public interface Shape {
 	/**
 	 * Set the friction applied to this shape
 	 * 
-	 * @param rest The friction applied to this shape
+	 * @param friction The friction applied to this shape
 	 */
 	void setFriction(float friction);
 
 	/**
 	 * Set the density applied to this shape
 	 * 
-	 * @param rest The density applied to this shape
+	 * @param density The density applied to this shape
 	 */
 	void setDensity(float density);
 	
@@ -57,5 +57,5 @@ public interface Shape {
 	 *
 	 * @return The shapes that build up this fizzy shape 
 	 */
-    ArrayList<org.jbox2d.collision.shapes.Shape> getJBoxShapes();
+    List<org.jbox2d.collision.shapes.Shape> getJBoxShapes();
 }

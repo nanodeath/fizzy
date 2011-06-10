@@ -1,6 +1,7 @@
 package org.newdawn.fizzy;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
@@ -19,7 +20,7 @@ public class Body {
 	/** The body definition held by JBox2D */
 	private BodyDef jboxBodyDef;
 	/** The list of bodies this body is touching */
-	private ArrayList<Body> touching = new ArrayList<Body>();
+	private List<Body> touching = new ArrayList<Body>();
 	/** The shape used to represent this body */
 	private Shape shape;
 	/** The userdata assigned to this body if any */
@@ -97,8 +98,8 @@ public class Body {
 	public int touchCount(Body other) {
 		int count = 0;
 		
-		for (int i=0;i<touching.size();i++) {
-			if (touching.get(i) == other) {
+		for(Body touched : touching){
+			if(touched == other){
 				count++;
 			}
 		}
@@ -305,7 +306,7 @@ public class Body {
 	 */
 	private void checkBody() {
 		if (jboxBody == null) {
-			throw new RuntimeException("This method requires that the body has been added to the world first");
+			throw new NotAddedToWorldException();
 		}
 	}
 

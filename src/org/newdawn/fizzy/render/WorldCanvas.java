@@ -18,6 +18,7 @@ import org.newdawn.fizzy.World;
  * 
  * @author kevin
  */
+@SuppressWarnings("serial")
 public class WorldCanvas extends Canvas {
 	/** The world we're displaying */
 	private World world;

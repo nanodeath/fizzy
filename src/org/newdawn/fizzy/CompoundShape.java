@@ -1,6 +1,7 @@
 package org.newdawn.fizzy;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A shape built up of other shapes
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  */
 public class CompoundShape implements Shape {
 	/** The children of this compound, i.e. the shapes it's built out of */
-	private ArrayList<Shape> children = new ArrayList<Shape>();
+	private List<Shape> children = new ArrayList<Shape>();
 	/** The body this shape is being used in if any */
 	private Body body;
 	
@@ -54,14 +55,14 @@ public class CompoundShape implements Shape {
 	
 	@Override
 	public void createInBody(Body body) {
-		for (int i=0;i<children.size();i++) {
-			children.get(i).createInBody(body);
+		for(Shape child : children){
+			child.createInBody(body);
 		}
 	}
 
 	@Override
-	public ArrayList<org.jbox2d.collision.shapes.Shape> getJBoxShapes() {
-		ArrayList<org.jbox2d.collision.shapes.Shape> shapes = new ArrayList<org.jbox2d.collision.shapes.Shape>();
+	public List<org.jbox2d.collision.shapes.Shape> getJBoxShapes() {
+		List<org.jbox2d.collision.shapes.Shape> shapes = new ArrayList<org.jbox2d.collision.shapes.Shape>();
 
 		for (int i=0;i<children.size();i++) {
 			shapes.addAll(children.get(i).getJBoxShapes());
@@ -72,22 +73,22 @@ public class CompoundShape implements Shape {
 
 	@Override
 	public void setDensity(float density) {
-		for (int i=0;i<children.size();i++) {
-			children.get(i).setDensity(density);
+		for(Shape child : children){
+			child.setDensity(density);
 		}
 	}
 
 	@Override
 	public void setFriction(float friction) {
-		for (int i=0;i<children.size();i++) {
-			children.get(i).setFriction(friction);
+		for(Shape child : children){
+			child.setFriction(friction);
 		}
 	}
 
 	@Override
 	public void setRestitution(float rest) {
-		for (int i=0;i<children.size();i++) {
-			children.get(i).setRestitution(rest);
+		for(Shape child : children){
+			child.setRestitution(rest);
 		}
 	}
 

@@ -48,6 +48,6 @@ public class CollisionEvent {
 	 * @return True if this event relates to the given body
 	 */
 	public boolean contains(Body current) {
-		return ((bodyA == current) || (bodyB == current));
+		return (bodyA == current) || (bodyB == current);
 	}
 }
