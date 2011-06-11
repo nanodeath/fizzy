@@ -15,7 +15,7 @@ import org.jbox2d.dynamics.FixtureDef;
  * @param <T> A shape definition for the primitive
  */
 public abstract class PrimitiveShape implements Shape {
-	/** The array list that contains this shape */
+	/** The array list of bodies that contains this shape */
 	protected List<org.jbox2d.collision.shapes.Shape> jbox2DShapes = new ArrayList<org.jbox2d.collision.shapes.Shape>();
 	/** The primitive shape that represent this fizzy fixture */
 	protected Fixture jbox2DFixture;
@@ -46,7 +46,7 @@ public abstract class PrimitiveShape implements Shape {
 	public void createInBody(Body<?> body) {
 		this.body = body;
 		jbox2DFixture = body.getJBoxBody().createFixture(def);
-		jbox2DShapes.add(def.shape);
+		jbox2DShapes.add(jbox2DFixture.getShape());
 	}
 
 	@Override

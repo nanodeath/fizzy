@@ -8,6 +8,7 @@ import org.newdawn.fizzy.Polygon;
 import org.newdawn.fizzy.Rectangle;
 import org.newdawn.fizzy.StaticBody;
 import org.newdawn.fizzy.World;
+import org.newdawn.fizzy.World.OutOfBoundsBehavior;
 
 /**
  * Simple test for the debug rendering system
@@ -27,13 +28,14 @@ public class CompoundTest extends AbstractTest {
 
 	@Override
 	public World createWorld() {
-		World world = new World(800,800);
+		World world = new World();
+		world.setBounds(800, 800);
 		
 		CompoundShape shape = new CompoundShape();
 		shape.add(new Rectangle(20,10).setOffset(-5, 0, 0));
 		shape.add(new Rectangle(10,10).setOffset(0, 10, 0));
 		
-		Body compound = new DynamicBody(shape, 0, 0.0f);
+		Body<?> compound = new DynamicBody(shape, 0, 0.0f);
 		compound.setRestitution(0.1f);
 		world.add(compound);
 		compound.setRotation(0.5f);
@@ -58,7 +60,7 @@ public class CompoundTest extends AbstractTest {
 		world.add(compound);
 		compound.setRotation(0.5f);
 		
-		Body floor = new StaticBody(new Rectangle(200.0f, 10.0f), 0, -50.0f);
+		Body<?> floor = new StaticBody(new Rectangle(200.0f, 10.0f), 0, -50.0f);
 		floor.setRestitution(0.1f);
 		world.add(floor);
 		floor = new StaticBody(new Rectangle(10.0f, 100.0f), -105.0f, 0);

@@ -26,6 +26,8 @@ abstract public class Body<T> {
 	private Shape shape;
 	/** The userdata assigned to this body if any */
 	private T userData;
+	/** Whether the body has been attached to a world */
+	private boolean attached;
 	
 	/**
 	 * Create a new body
@@ -216,14 +218,31 @@ abstract public class Body<T> {
 	}
 	
 	/**
-	 * True if this body has reached the edge of the world bounds and hence
-	 * is frozen in space.
-	 * 
-	 * @return True if this body has reached the edge of the world bounds.
+	 * @return true if the body is attached to a world and is marked "active"
 	 */
+	public boolean isActive() {
+		return attached && jboxBody.isActive();
+	}
+	
+	/**
+	 * Tests whether this body is out of bounds.
+	 * Since the world no longer tracks which objects is out of bounds,
+	 * this just checks whether the body is still active...which will actually
+	 * work as expected if the world's {@link World.OutOfBoundsBehavior} is set
+	 * to DESTROY or DEACTIVATE.
+	 * @deprecated use {@link #isActive()}, {@link #isAttached()}, and {@link World#setOutOfBoundsBehavior(org.newdawn.fizzy.World.OutOfBoundsBehavior)} instead.
+	 * @return true if body is inactive
+	 */
+	@Deprecated
 	public boolean isOutOfBounds() {
-		assertBodyAttached();
-		return !jboxBody.isActive();
+		return !isActive();
+	}
+	
+	/**
+	 * @return true if the body is currently attached to a world
+	 */
+	public boolean isAttached() {
+		return attached;
 	}
 	
 	/**
@@ -236,6 +255,7 @@ abstract public class Body<T> {
 				
 		jboxBody = jboxWorld.createBody(jboxBodyDef);
 		shape.createInBody(this);
+		attached = true;
 	}
 
 	/**
@@ -246,6 +266,7 @@ abstract public class Body<T> {
 	void removeFromWorld(World world) {
 		org.jbox2d.dynamics.World jboxWorld = world.getJBoxWorld();
 		jboxWorld.destroyBody(jboxBody);
+		attached = false;
 	}
 	
 	/**
@@ -293,7 +314,7 @@ abstract public class Body<T> {
 	 * Check the body has been added to the world 
 	 */
 	private void assertBodyAttached() {
-		if (jboxBody == null) {
+		if (!attached) {
 			throw new NotAttachedToWorldException();
 		}
 	}

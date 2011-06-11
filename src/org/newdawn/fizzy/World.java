@@ -1,15 +1,19 @@
 package org.newdawn.fizzy;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
+import org.jbox2d.callbacks.QueryCallback;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.Manifold;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.contacts.Contact;
 
 /**
@@ -19,18 +23,16 @@ import org.jbox2d.dynamics.contacts.Contact;
  * @author kevin
  */
 public class World {
+	public enum OutOfBoundsBehavior {
+		NONE,
+		DEACTIVATE,
+		DESTROY
+	}
+
 	/** The default gravity applied if none is specified (-10) */
 	public static final float DEFAULT_GRAVITY = -10f;
-	/** The default left hand bound of the physics world if none is specified (-200) */
-	public static final float DEFAULT_LEFT_BOUND = -200f;
-	/** The default right hand bound of the physics world if none is specified (200) */
-	public static final float DEFAULT_RIGHT_BOUND = 200f;
-	/** The default top bound of the physics world if none is specified (-200) */
-	public static final float DEFAULT_TOP_BOUND = -200f;
-	/** The default bottom bound of the physics world if none is specified (200) */
-	public static final float DEFAULT_BOTTOM_BOUND = 200f;
 	/** The default number of iteration used in the integration if none specified (10) */
-	public static final float DEFAULT_ITERATIONS = 10f;
+	public static final int DEFAULT_ITERATIONS = 10;
 	
 	/** The JBox2D world this World object is wrapping */
 	private org.jbox2d.dynamics.World jboxWorld;
@@ -40,57 +42,24 @@ public class World {
 	private Map<org.jbox2d.collision.shapes.Shape, Body<?>> shapeMap = new HashMap<org.jbox2d.collision.shapes.Shape, Body<?>>();
 	/** The list of listeners to be notified of collision events */
 	private List<WorldListener> listeners = new ArrayList<WorldListener>();
-	/** The number of iterations to integrate over */
-	private int iterations;
-	// TODO Max: not used at the moment -- used to be passed in to the JBox2D world constructor...
-	@SuppressWarnings("unused")
+	
 	private AABB worldAABB;
+	private AABB[] outOfBoundsRegions;
+	private OutOfBoundsCallback outOfBoundsCallback;
+	private OutOfBoundsBehavior outOfBoundsBehavior = OutOfBoundsBehavior.DEACTIVATE;
 	
-	/**
-	 * Create a new world simulation
-	 * 
-	 * @param iterations The number of iterations to apply integration across, higher number
-	 * becomes more accurate but slower.
-	 */
-	public World(int iterations) {
-		this(DEFAULT_LEFT_BOUND,DEFAULT_TOP_BOUND,DEFAULT_RIGHT_BOUND,DEFAULT_BOTTOM_BOUND
-				 , DEFAULT_GRAVITY, iterations);
-	}
+	/** The number of iterations to integrate over */
+	private int velocityIterations;
+	private int positionIterations;
 	
-	/**
-	 * Create a new world simulation with default settings
-	 */
-	public World() {
-		this(DEFAULT_LEFT_BOUND,DEFAULT_TOP_BOUND,DEFAULT_RIGHT_BOUND,DEFAULT_BOTTOM_BOUND
-			 , DEFAULT_GRAVITY, DEFAULT_ITERATIONS);
+	public World(){
+		this(DEFAULT_GRAVITY);
 	}
-
-	/**
-	 * Create a new world simulation 
-	 * 
-	 * @param worldWidth The width of the physics world
-	 * @param worldHeight The height of the physics world
-	 */
-	public World(float worldWidth, float worldHeight) {
-		this(-worldWidth/2,-worldHeight/2,worldWidth/2,worldHeight/2
-			 , DEFAULT_GRAVITY, DEFAULT_ITERATIONS);
+	public World(float gravity) {
+		this(new Vec2(0f, gravity));
 	}
-	
-	/**
-	 * Create a new world simulation
-	 * 
-	 * @param x1 The left bound of the physics world
-	 * @param y1 The top bound of the physics world
-	 * @param x2 The right bound of the physics world
-	 * @param y2 The bottom bound of the physics world
-	 * @param g The gravity to apply
-	 * @param iterations The number of iterations to integrate over
-	 */
-	public World(float x1, float y1, float x2, float y2, float g, float iterations) {
-		this.iterations = 10;
-		
-		worldAABB = new AABB(new Vec2(x1, y1), new Vec2(x2, y2));
-		Vec2 gravity = new Vec2(0.0f, g);
+	public World(Vec2 gravity){
+		setIterations(DEFAULT_ITERATIONS);
 		boolean doSleep = true;
 		jboxWorld = new org.jbox2d.dynamics.World(gravity, doSleep);
 		jboxWorld.setContactListener(new ProxyContactListener());		
@@ -160,7 +129,58 @@ public class World {
 	 * @param timeStep The amount of time to simulate
  	 */
 	public void update(float timeStep) {
-		jboxWorld.step(timeStep, iterations, iterations);
+		jboxWorld.step(timeStep, velocityIterations, positionIterations);
+		resolveOutOfBounds();
+	}
+	
+	
+	private class OutOfBoundsQueryCallbackHelper implements QueryCallback {
+		private Collection<Body<?>> bodies;
+		public OutOfBoundsQueryCallbackHelper(Collection<Body<?>> bodies){
+			this.bodies = bodies;
+		}
+		@Override
+		public boolean reportFixture(Fixture fixture) {
+			Body<?> body = shapeMap.get(fixture.getShape());
+			if(body != null){
+				bodies.add(body);
+			}
+			return true;
+		}
+	};
+	
+	private void resolveOutOfBounds(){
+		/*
+		 * Only continue if:
+		 * a) out of bounds is defined, and
+		 * b) either a callback or a non-NONE out of bounds behavior is set
+		 */
+		if (outOfBoundsRegions == null || (outOfBoundsBehavior != OutOfBoundsBehavior.NONE || outOfBoundsCallback != null))
+			return;
+		Collection<Body<?>> bodies = new LinkedList<Body<?>>();
+		QueryCallback queryCallback = new OutOfBoundsQueryCallbackHelper(bodies);
+		for(AABB region : outOfBoundsRegions){
+			jboxWorld.queryAABB(queryCallback, region);
+		}
+
+		if(outOfBoundsCallback != null){
+			boolean continueProcessing = outOfBoundsCallback.reportBodies(bodies);
+			if(!continueProcessing){
+				return;
+			}
+		}
+		if(outOfBoundsBehavior != OutOfBoundsBehavior.NONE){
+			for(Body<?> body : bodies){
+				switch(outOfBoundsBehavior){
+				case DEACTIVATE:
+					body.jboxBody.setActive(false);
+					break;
+				case DESTROY:
+					remove(body);
+					break;
+				}
+			}
+		}
 	}
 	
 	/**
@@ -179,6 +199,72 @@ public class World {
 	 */
 	public void removeListener(WorldListener listener) {
 		listeners.remove(listener);
+	}
+	
+	/**
+	 * Establish world boundaries centered at the origin and going in half-widths
+	 * and half-heights in horizontal and vertical directions.
+	 * @param width total width of the world
+	 * @param height total height of the world
+	 */
+	public void setBounds(float width, float height){
+		setBounds(-width/2, -height/2, width/2, height/2);
+	}
+	
+	/**
+	 * Establish world boundaries at the given coordinates.
+	 * 
+	 * @param x1 x-coordinate of lower-left coordinate 
+	 * @param y1 y-coordinate of lower-left coordinate
+	 * @param x2 x-coordinate of upper-right coordinate
+	 * @param y2 y-coordinate of upper-right coordinate
+	 */
+	public void setBounds(float x1, float y1, float x2, float y2){
+		worldAABB = new AABB(new Vec2(x1, y1), new Vec2(x2, y2));
+		outOfBoundsRegions = new AABB[]{
+			// everything below-left and directly left of worldAABB
+			new AABB(new Vec2(Float.MIN_VALUE, Float.MIN_VALUE), new Vec2(x1, y2)),
+			// everything above-left and directly above worldAABB
+			new AABB(new Vec2(Float.MIN_VALUE, y2), new Vec2(x2, Float.MAX_VALUE)),
+			// everything above-right and directly right of worldAABB
+			new AABB(new Vec2(x2, y1), new Vec2(Float.MAX_VALUE, Float.MAX_VALUE)),
+			// everything below-right and directly below worldAABB
+			new AABB(new Vec2(x1, Float.MIN_VALUE), new Vec2(Float.MAX_VALUE, y1))
+		};
+	}
+	
+	/**
+	 * Sets the "what happens" behavior when a body exits the world boundaries.
+	 * Defaults to DEACTIVATE.
+	 * @param behavior new behavior
+	 */
+	public void setOutOfBoundsBehavior(OutOfBoundsBehavior behavior){
+		setOutOfBoundsBehavior(behavior, null);
+	}
+	/**
+	 * Same as {@link World#setOutOfBoundsBehavior(OutOfBoundsBehavior)}, but
+	 * also configures a callback to run before the OutOfBoundsBehavior is enforced.
+	 * The callback can modify its argument to change which bodies have the behavior
+	 * applied, i.e. so that certain bodies aren't deactivated, destroyed, etc.
+	 * 
+	 * @param behavior
+	 * @param callback
+	 */
+	public void setOutOfBoundsBehavior(OutOfBoundsBehavior behavior, OutOfBoundsCallback callback){
+		outOfBoundsBehavior = behavior;
+		outOfBoundsCallback = callback;
+	}
+	public interface OutOfBoundsCallback {
+		/**
+		 * Bodies that are about to be processed -- you can modify this collection.
+		 * @param bodies
+		 * @return false to abort regular OutOfBounds behavior
+		 */
+		public boolean reportBodies(Collection<Body<?>> bodies);
+	}
+	
+	public void setIterations(int iterations){
+		velocityIterations = positionIterations = iterations;
 	}
 	
 	/**
@@ -251,5 +337,27 @@ public class World {
 		@Override
 		public void postSolve(Contact contact, ContactImpulse impulse) {}
 		
+	}
+	
+	/**
+	 * Sets the world gravity.
+	 * 
+	 * Negative is "down", so you'll usually want a negative value here.
+	 * There won't be any pull in the x-axis.
+	 * 
+	 * @param gravity new value for gravity (negative for down)
+	 */
+	public void setGravity(float gravity){
+		setGravity(0f, gravity);
+	}
+	/**
+	 * Sets x- and y-axis gravity for the world.  This gives you complete
+	 * control over horizontal gravity in addition to vertical gravity.
+	 *  
+	 * @param xGravity horizontal pull
+	 * @param yGravity vertical pull
+	 */
+	public void setGravity(float xGravity, float yGravity){
+		jboxWorld.setGravity(new Vec2(xGravity, yGravity));
 	}
 }
