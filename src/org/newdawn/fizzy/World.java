@@ -24,8 +24,17 @@ import org.jbox2d.dynamics.contacts.Contact;
  */
 public class World {
 	public enum OutOfBoundsBehavior {
+		/**
+		 * Do nothing to objects that go out of bounds.
+		 */
 		NONE,
+		/**
+		 * Deactivate objects that go out of bounds (mark them as not active)
+		 */
 		DEACTIVATE,
+		/**
+		 * Remove objects from the world completely that go out of bounds.
+		 */
 		DESTROY
 	}
 
