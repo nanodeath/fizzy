@@ -125,7 +125,7 @@ abstract public class Body<T> {
 	 */
 	public void applyForce(float x, float y) {
 		assertBodyAttached();
-		jboxBody.applyForce(new Vec2(x,y), new Vec2(0,0));
+		jboxBody.applyForce(new Vec2(x,y), jboxBody.getWorldCenter());
 	}
 	
 	/**
@@ -372,5 +372,13 @@ abstract public class Body<T> {
 	public void setAngularVelocity(float vel) {
 		assertBodyAttached();
 		jboxBody.setAngularVelocity(vel);
+	}
+	
+	public void setFixedRotation(boolean fixedRotation){
+		if(attached){
+			jboxBody.setFixedRotation(fixedRotation);
+		} else {
+			jboxBodyDef.fixedRotation = fixedRotation;
+		}
 	}
 }

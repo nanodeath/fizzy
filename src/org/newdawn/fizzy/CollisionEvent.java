@@ -11,6 +11,7 @@ public class CollisionEvent {
 	private Body<?> bodyA;
 	/** The second body in the collision */
 	private Body<?> bodyB;
+	private FizzyContact contact;
 	
 	/**
 	 * Create a new event
@@ -18,9 +19,10 @@ public class CollisionEvent {
 	 * @param bodyA The first body in the collision
 	 * @param bodyB The second body in the collision
 	 */
-	CollisionEvent(Body<?> bodyA, Body<?> bodyB) {
+	CollisionEvent(Body<?> bodyA, Body<?> bodyB, FizzyContact contact) {
 		this.bodyA = bodyA;
 		this.bodyB = bodyB;
+		this.contact = contact;
 	}
 	
 	/**
@@ -39,6 +41,10 @@ public class CollisionEvent {
  	 */
 	public Body<?> getBodyB() {
 		return bodyB;
+	}
+	
+	public FizzyContact getContact() {
+		return contact;
 	}
 
 	/**

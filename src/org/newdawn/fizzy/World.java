@@ -3,9 +3,11 @@ package org.newdawn.fizzy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
@@ -51,6 +53,9 @@ public class World {
 	private Map<org.jbox2d.collision.shapes.Shape, Body<?>> shapeMap = new HashMap<org.jbox2d.collision.shapes.Shape, Body<?>>();
 	/** The list of listeners to be notified of collision events */
 	private List<WorldListener> listeners = new ArrayList<WorldListener>();
+	
+	/** List of listeners that are associated with particular bodies */
+	private Map<Body<?>, Set<WorldListener>> bodyListeners = new HashMap<Body<?>, Set<WorldListener>>();
 	
 	private AABB worldAABB;
 	private AABB[] outOfBoundsRegions;
@@ -211,8 +216,38 @@ public class World {
 	}
 	
 	/**
+	 * Add a listener that listens for collisions on a particular body.
+	 * @param body body on which collisions should be detected
+	 * @param listener the listener to call
+	 */
+	public void addBodyListener(Body<?> body, WorldListener listener){
+		Set<WorldListener> listeners = bodyListeners.get(body);
+		if(listeners == null){
+			listeners = new HashSet<WorldListener>();
+			bodyListeners.put(body, listeners);
+		}
+		listeners.add(listener);
+	}
+	
+	/**
+	 * Remove a listener that listens for collisions on a particular body
+	 * @see {@link #addBodyListener(Body, WorldListener)}
+	 * @param body
+	 * @param listener
+	 */
+	public void removeBodyListener(Body<?> body, WorldListener listener){
+		Set<WorldListener> listeners = bodyListeners.get(body);
+		if(listeners != null){
+			listeners.remove(listener);
+			if(listeners.isEmpty()){
+				bodyListeners.remove(body);
+			}
+		}
+	}
+	
+	/**
 	 * Establish world boundaries centered at the origin and going in half-widths
-	 * and half-heights in horizontal and vertical directions.
+	 * and half-heights in horizontal and vertical directions respectively.
 	 * @param width total width of the world
 	 * @param height total height of the world
 	 */
@@ -282,10 +317,22 @@ public class World {
 	 * @param bodyA The first body in the collision
 	 * @param bodyB The second body in the collision
 	 */
-	private void fireCollision(Body<?> bodyA, Body<?> bodyB) {
-		CollisionEvent event = new CollisionEvent(bodyA, bodyB);
-		for (int i=0;i<listeners.size();i++) {
-			listeners.get(i).collided(event);
+	private void fireCollision(Body<?> bodyA, Body<?> bodyB, FizzyContact contact) {
+		CollisionEvent event = new CollisionEvent(bodyA, bodyB, contact);
+		for(WorldListener listener : listeners){
+			listener.collided(event);
+		}
+		Collection<WorldListener> moreListeners = bodyListeners.get(bodyA);
+		if (moreListeners != null) {
+			for (WorldListener listener : moreListeners) {
+				listener.collided(event);
+			}
+		}
+		moreListeners = bodyListeners.get(bodyB);
+		if (moreListeners != null) {
+			for (WorldListener listener : moreListeners) {
+				listener.collided(event);
+			}
 		}
 	}
 
@@ -295,11 +342,24 @@ public class World {
 	 * @param bodyA The first body in the separation
 	 * @param bodyB The second body in the separation
 	 */
-	private void fireSeparated(Body<?> bodyA, Body<?> bodyB) {
-		CollisionEvent event = new CollisionEvent(bodyA, bodyB);
-		for (int i=0;i<listeners.size();i++) {
-			listeners.get(i).separated(event);
-		}	
+	private void fireSeparated(Body<?> bodyA, Body<?> bodyB, FizzyContact contact) {
+		CollisionEvent event = new CollisionEvent(bodyA, bodyB, contact);
+		for(WorldListener listener : listeners){
+			listener.separated(event);
+		}
+
+		Collection<WorldListener> moreListeners = bodyListeners.get(bodyA);
+		if(moreListeners != null){
+			for(WorldListener listener : moreListeners){
+				listener.separated(event);
+			}
+		}
+		moreListeners = bodyListeners.get(bodyB);
+		if(moreListeners != null){
+			for(WorldListener listener : moreListeners){
+				listener.separated(event);
+			}
+		}
 	}
 	
 	/**
@@ -318,9 +378,8 @@ public class World {
 			if ((bodyA != null) && (bodyB != null)) {
 				bodyA.touch(bodyB);
 				bodyB.touch(bodyA);
-				
 				if (bodyA.touchCount(bodyB) == 1) {
-					fireCollision(bodyA, bodyB);
+					fireCollision(bodyA, bodyB, new FizzyContact(contact));
 				}
 			}
 		}
@@ -335,7 +394,7 @@ public class World {
 				bodyB.untouch(bodyA);
 				
 				if (bodyA.touchCount(bodyB) == 0) {
-					fireSeparated(bodyA, bodyB);
+					fireSeparated(bodyA, bodyB, new FizzyContact(contact));
 				}
 			}
 		}
