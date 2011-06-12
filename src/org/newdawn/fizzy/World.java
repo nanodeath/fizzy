@@ -116,6 +116,7 @@ public class World {
 		}
 		body.removeFromWorld(this);
 		bodies.remove(body);
+		bodyListeners.remove(body);
 	}
 	
 	/**
