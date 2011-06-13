@@ -118,6 +118,16 @@ abstract public class Body<T> {
 	}
 	
 	/**
+	 * Reset all touch-related data -- disappear from other objects' touch information.
+	 */
+	void resetTouching(){
+		for(Body<?> touched : touching){
+			touched.untouch(this);
+		}
+		touching.clear();
+	}
+	
+	/**
 	 * Apply force to the body
 	 * 
 	 * @param x The amount of force on the X axis
@@ -266,6 +276,7 @@ abstract public class Body<T> {
 	void removeFromWorld(World world) {
 		org.jbox2d.dynamics.World jboxWorld = world.getJBoxWorld();
 		jboxWorld.destroyBody(jboxBody);
+		resetTouching();
 		attached = false;
 	}
 	
