@@ -128,7 +128,7 @@ abstract public class Body<T> {
 	}
 	
 	/**
-	 * Apply force to the body
+	 * Apply force to the body at its center.
 	 * 
 	 * @param x The amount of force on the X axis
 	 * @param y The amount of force on the Y axis
@@ -136,6 +136,23 @@ abstract public class Body<T> {
 	public void applyForce(float x, float y) {
 		assertBodyAttached();
 		jboxBody.applyForce(new Vec2(x,y), jboxBody.getWorldCenter());
+	}
+	
+	/**
+	 * Apple force to the body at an arbitrary location.
+	 * 
+	 * @param xMagnitude The amount of force on the X axis
+	 * @param yMagnitude The amount of force on the Y axis
+	 * @param xAt The x-coordinate at which to apply the force
+	 * @param yAt The y-coordinate at which to apply the force
+	 * @param isLocalPoint if true, assume the *At params are local to the body.  otherwise, they're world coordinates.
+	 */
+	public void applyForce(float xMagnitude, float yMagnitude, float xAt, float yAt, boolean isLocalPoint){
+		assertBodyAttached();
+		Vec2 position = new Vec2(xAt, yAt);
+		if(isLocalPoint)
+			position = jboxBody.getWorldPoint(position);
+		jboxBody.applyForce(new Vec2(xMagnitude, yMagnitude), position);
 	}
 	
 	/**
