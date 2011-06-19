@@ -10,17 +10,19 @@
 		
 		<property name="fizzy.jar" value="fizzy.jar"/>
 		<property name="fizzy.zip" value="fizzy-${build.number}.zip"/>
+
+                <path id="fizzy.classpath">
+                	<pathelement path="${jbox2d.jar}"/>
+                </path>
 	</target>
+	
 		
 	<target name="compile" depends="init">
 		<delete file="${build.dir}/${fizzy.jar}"/>
-		<javac includes="**/**" debug="true" srcdir="src" destdir="${build.dir}/classes" target="1.5" source="1.5">
-		    <classpath>
-		      <pathelement path="${jbox2d.jar}"/>
-		    </classpath>
-		</javac>
+		<javac includes="**/**" debug="true" srcdir="src" destdir="${build.dir}/classes" target="1.6" source="1.6"
+			classpathref="fizzy.classpath" />
 		<jar destfile="${build.dir}/${fizzy.jar}" 
-			 basedir="${build.dir}/classes" includes="**/**"/>
+			basedir="${build.dir}/classes" includes="**/**"/>
 	</target>
 
 	<target name="javadoc" depends="init">
@@ -31,13 +33,8 @@
 		           author="true"
 		           version="true"
 		           use="true"
+		           classpathref="fizzy.classpath"
 		           windowtitle="Fizzy - A simply wrapper around JBox2D">
-			<fileset dir="src" defaultexcludes="yes">
-				<include name="**/**/*.java"/>
-			</fileset>
-			<classpath>
-			  <pathelement path="${jbox2d.jar}"/>
-		    </classpath>
 		    <doctitle><![CDATA[<h1>Fizzy</h1>]]></doctitle>
 		    <bottom><![CDATA[<i>Copyright &#169; 2010 New Dawn Software. All Rights Reserved.</i>]]></bottom>
 	    </javadoc>

@@ -232,7 +232,7 @@ public class World {
 	
 	/**
 	 * Remove a listener that listens for collisions on a particular body
-	 * @see {@link #addBodyListener(Body, WorldListener)}
+	 * @see #addBodyListener(Body, WorldListener)
 	 * @param body
 	 * @param listener
 	 */

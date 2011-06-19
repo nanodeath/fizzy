@@ -11,8 +11,6 @@ import org.jbox2d.dynamics.FixtureDef;
  * properties.
  * 
  * @author kevin
- *
- * @param <T> A shape definition for the primitive
  */
 public abstract class PrimitiveShape implements Shape {
 	/** The array list of bodies that contains this shape */
@@ -34,9 +32,7 @@ public abstract class PrimitiveShape implements Shape {
 	}
 	
 	/**
-	 * Create a new primitive shape 
-	 * 
-	 * @param localDef The shape definition backing this fizzy shape
+	 * Create a new primitive shape
 	 */
 	protected PrimitiveShape() {
 		this.def = new FixtureDef();
