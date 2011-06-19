@@ -128,6 +128,14 @@ abstract public class Body<T> {
 	}
 	
 	/**
+	 * Checks to see if this body is touching anything.
+	 * @return true if something is touching
+	 */
+	public boolean isTouchingAnything(){
+		return !touching.isEmpty();
+	}
+	
+	/**
 	 * Apply force to the body at its center.
 	 * 
 	 * @param x The amount of force on the X axis
