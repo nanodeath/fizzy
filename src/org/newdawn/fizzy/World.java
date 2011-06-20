@@ -76,7 +76,7 @@ public class World {
 		setIterations(DEFAULT_ITERATIONS);
 		boolean doSleep = true;
 		jboxWorld = new org.jbox2d.dynamics.World(gravity, doSleep);
-		jboxWorld.setContactListener(new ProxyContactListener());		
+		jboxWorld.setContactListener(new ProxyContactListener());
 	}
 	
 	/**

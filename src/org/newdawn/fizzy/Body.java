@@ -185,6 +185,24 @@ abstract public class Body<T> {
 	}
 	
 	/**
+	 * Get the X position of the body in local coordinates
+	 * @return The x position of the body in local coordinates
+	 */
+	public float getLocalX(){
+		assertBodyAttached();
+		return jboxBody.getLocalCenter().x;
+	}
+	
+	/**
+	 * Get the Y position of the body in local coordinates
+	 * @return The y position of the body in local coordinates
+	 */
+	public float getLocalY(){
+		assertBodyAttached();
+		return jboxBody.getLocalCenter().y;
+	}
+	
+	/**
 	 * Get the rotation of the body
 	 * 
 	 * @return The rotation of the body
@@ -380,10 +398,32 @@ abstract public class Body<T> {
 	 * value slows the body acceleration. Maximum is 1.0.
 	 * 
 	 * @param damping The amount to dampen the movement by
+	 * @deprecated use {@link #setLinearDamping(float)} instead
 	 */
 	public void setDamping(float damping) {
+		setLinearDamping(damping);
+	}
+	
+	/**
+	 * Set the linear damping to apply to this body. Higher 
+	 * value slows the body acceleration. Maximum is 1.0.
+	 * 
+	 * @param damping The amount to dampen the movement by
+	 */
+	public void setLinearDamping(float damping){
 		if (jboxBody != null) throw new AlreadyAddedToWorldException();
 		jboxBodyDef.linearDamping = damping;
+	}
+	
+	/**
+	 * Set the angular damping to apply to this body.  Higher
+	 * value slows the angular velocity faster.  Maximum is 1.0.
+	 * 
+	 * @param damping The amount to dampen the rotation by
+	 */
+	public void setAngularDamping(float damping){
+		if (jboxBody != null) throw new AlreadyAddedToWorldException();
+		jboxBodyDef.angularDamping = damping;
 	}
 
 	/**
