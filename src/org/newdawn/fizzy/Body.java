@@ -3,6 +3,8 @@ package org.newdawn.fizzy;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jbox2d.collision.AABB;
+import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
 
@@ -450,11 +452,40 @@ abstract public class Body<T> {
 		jboxBody.setAngularVelocity(vel);
 	}
 	
+	/**
+	 * Sets whether this body has fixed rotation enabled.
+	 * @param fixedRotation true if fixed rotation mode should be enabled.
+	 */
 	public void setFixedRotation(boolean fixedRotation){
 		if(attached){
 			jboxBody.setFixedRotation(fixedRotation);
 		} else {
 			jboxBodyDef.fixedRotation = fixedRotation;
 		}
+	}
+	
+	/**
+	 * Get the bounding box that encloses this body and all of its constituent shapes
+	 * @return bounding box of all shapes enclosed in this body
+	 */
+	public BoundingBox getBoundingBox(){
+		AABB bodyAABB = new AABB(new AABB(new Vec2(Float.MAX_VALUE, Float.MAX_VALUE), new Vec2(Float.MIN_VALUE, Float.MIN_VALUE)));
+		AABB shapeAABB = new AABB();
+		for(org.jbox2d.collision.shapes.Shape jshape : shape.getJBoxShapes()){
+			jshape.computeAABB(shapeAABB, jboxBody.m_xf);
+			if(shapeAABB.lowerBound.x < bodyAABB.lowerBound.x){
+				bodyAABB.lowerBound.x = shapeAABB.lowerBound.x;
+			}
+			if(shapeAABB.lowerBound.y < bodyAABB.lowerBound.y){
+				bodyAABB.lowerBound.y = shapeAABB.lowerBound.y;
+			}
+			if(shapeAABB.upperBound.x > bodyAABB.upperBound.x){
+				bodyAABB.upperBound.x = shapeAABB.upperBound.x;
+			}
+			if(shapeAABB.upperBound.y > bodyAABB.upperBound.y){
+				bodyAABB.upperBound.y = shapeAABB.upperBound.y;
+			}
+		}
+		return BoundingBox.fromAABB(bodyAABB);
 	}
 }
