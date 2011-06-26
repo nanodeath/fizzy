@@ -164,6 +164,18 @@ abstract public class Body<T> {
 			position = jboxBody.getWorldPoint(position);
 		jboxBody.applyForce(new Vec2(xMagnitude, yMagnitude), position);
 	}
+
+	/**
+	 * (from JBox2d): Apply a torque. This affects the angular velocity without
+	 * affecting the linear velocity of the center of mass. This wakes up the
+	 * body.
+	 * 
+	 * @param torque about the z-axis (out of the screen), usually in N-m.
+	 */
+	public void applyTorque(float torque){
+		assertBodyAttached();
+		jboxBody.applyTorque(torque);
+	}
 	
 	/**
 	 * Get the X position of the body
