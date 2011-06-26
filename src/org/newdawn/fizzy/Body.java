@@ -500,4 +500,17 @@ abstract public class Body<T> {
 		}
 		return BoundingBox.fromAABB(bodyAABB);
 	}
+	
+	private boolean bullet = false;
+	public void setBullet(boolean bullet){
+		this.bullet = bullet;
+		if(attached){
+			jboxBody.setBullet(bullet);
+		} else {
+			jboxBodyDef.bullet = bullet;
+		}
+	}
+	public boolean getBullet(){
+		return bullet;
+	}
 }
