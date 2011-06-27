@@ -466,6 +466,7 @@ abstract public class Body<T> {
 	
 	/**
 	 * Sets whether this body has fixed rotation enabled.
+	 * Bodies with Fixed Rotation can't rotate...in case that wasn't obvious.
 	 * @param fixedRotation true if fixed rotation mode should be enabled.
 	 */
 	public void setFixedRotation(boolean fixedRotation){
@@ -502,6 +503,11 @@ abstract public class Body<T> {
 	}
 	
 	private boolean bullet = false;
+	/**
+	 * Sets whether this body is to be considered a bullet.
+	 * @see #getBullet()
+	 * @param bullet
+	 */
 	public void setBullet(boolean bullet){
 		this.bullet = bullet;
 		if(attached){
@@ -510,7 +516,25 @@ abstract public class Body<T> {
 			jboxBodyDef.bullet = bullet;
 		}
 	}
+	/**
+	 * Is the current body considered a "bullet" (at high risk of passing through
+	 * other objects due to velocity).  This is on by default for Dynamic<->Static interactions
+	 * but not Dynamic<->Dynamic interactions.
+	 * @see http://www.box2d.org/manual.html
+	 * @return true if the object is a "bullet", false otherwise.
+	 */
 	public boolean getBullet(){
 		return bullet;
+	}
+
+	/**
+	 * Sets the body to active (or inactive).  Inactive objects are essentially
+	 * non-existent, as far as the physics world is concerned.
+	 * @see http://www.box2d.org/manual.html
+	 * @param flag true if body is to be active, false otherwise.
+	 */
+	public void setActive(boolean flag) {
+		assertBodyAttached();
+		jboxBody.setActive(flag);
 	}
 }
