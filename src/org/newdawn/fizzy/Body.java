@@ -183,8 +183,7 @@ abstract public class Body<T> {
 	 * @return The x position of the body
 	 */
 	public float getX() {
-		assertBodyAttached();
-		return jboxBody.getPosition().x;		
+		return attached ? jboxBody.getPosition().x : jboxBodyDef.position.x;
 	}
 
 	
@@ -194,8 +193,7 @@ abstract public class Body<T> {
 	 * @return The y position of the body
 	 */
 	public float getY() {
-		assertBodyAttached();
-		return jboxBody.getPosition().y;		
+		return attached ? jboxBody.getPosition().y : jboxBodyDef.position.y;
 	}
 	
 	/**
