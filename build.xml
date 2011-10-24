@@ -2,7 +2,7 @@
 	<target name="init">
 		<property name="build.number" value="0.1a"/>
 		
-		<property name="jbox2d.jar" value="lib/jbox2d-library-2.1.2-alpha-v2.jar"/>
+		<property name="jbox2d.jar" value="lib/jbox2d-library-2.1.2.jar"/>
 		
 		<property name="build.dir" value="target"/>	
 		<delete dir="${build.dir}"/>
