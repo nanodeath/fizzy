@@ -52,7 +52,7 @@ public class Circle extends PrimitiveShape {
 	public Circle(float radius, float density, float restitution, float friction) {
 		super();
 		def.shape = shape = new CircleShape();
-		def.shape.m_radius = radius;
+		def.shape.m_radius = radius*World.METERS_PER_PIXEL;
 		def.density = density;
 		def.restitution = restitution;
 		def.friction = friction;
@@ -64,7 +64,7 @@ public class Circle extends PrimitiveShape {
 	 * @return The radius of the circle
 	 */
 	public float getRadius() {
-		return shape.m_radius;
+		return shape.m_radius*World.PIXELS_PER_METER;
 	}
 
 }

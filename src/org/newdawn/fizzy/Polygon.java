@@ -58,7 +58,11 @@ public class Polygon extends PolygonBasedShape {
 	 * @param points points in CCW order (as usual)
 	 */
 	public void setPoints(Vec2[] points){
-		shape.set(points, points.length);
+		Vec2[] scaledPoints=new Vec2[points.length];
+		for (int i=0;i<points.length;i++){
+			scaledPoints[i]=points[i].mul(World.METERS_PER_PIXEL);
+		}
+		shape.set(scaledPoints, points.length);
 	}
 
 	/**
@@ -78,7 +82,7 @@ public class Polygon extends PolygonBasedShape {
 	 * @return The x coordinate of the point
 	 */
 	public float getPointX(int i) {
-		return shape.getVertex(i).x;
+		return shape.getVertex(i).x*World.PIXELS_PER_METER;
 	}
 
 	/**
@@ -89,7 +93,7 @@ public class Polygon extends PolygonBasedShape {
 	 * @return The y coordinate of the point
 	 */
 	public float getPointY(int i) {
-		return shape.getVertex(i).y;
+		return shape.getVertex(i).y*World.PIXELS_PER_METER;
 	}
 
 	/**
@@ -114,7 +118,7 @@ public class Polygon extends PolygonBasedShape {
 	@Override
 	protected void applyOffset(float x, float y, float angle) {
 		final Transform xf = new Transform();
-		xf.position.set(new Vec2(x, y));
+		xf.position.set(new Vec2(x, y).mul(World.METERS_PER_PIXEL));
 		xf.R.set(angle);
 		// Transform vertices and normals.
 		for (int i = 0; i < shape.getVertexCount(); ++i) {

@@ -7,6 +7,9 @@ import org.jbox2d.collision.AABB;
 import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.Fixture;
+import static org.newdawn.fizzy.World.METERS_PER_PIXEL;
+import static org.newdawn.fizzy.World.PIXELS_PER_METER;
 
 /**
  * A single body in the world. A body holds a shape which collide with
@@ -40,7 +43,7 @@ abstract public class Body<T> {
 	 */
 	public Body(Shape shape, float x, float y) {
 		jboxBodyDef = new BodyDef();
-		jboxBodyDef.position = new Vec2(x,y);
+		jboxBodyDef.position = new Vec2(x*METERS_PER_PIXEL,y*METERS_PER_PIXEL);
 		this.shape = shape;
 	}
 	
@@ -159,7 +162,7 @@ abstract public class Body<T> {
 	 */
 	public void applyForce(float xMagnitude, float yMagnitude, float xAt, float yAt, boolean isLocalPoint){
 		assertBodyAttached();
-		Vec2 position = new Vec2(xAt, yAt);
+		Vec2 position = new Vec2(xAt*METERS_PER_PIXEL, yAt*METERS_PER_PIXEL);
 		if(isLocalPoint)
 			position = jboxBody.getWorldPoint(position);
 		jboxBody.applyForce(new Vec2(xMagnitude, yMagnitude), position);
@@ -183,7 +186,7 @@ abstract public class Body<T> {
 	 * @return The x position of the body
 	 */
 	public float getX() {
-		return attached ? jboxBody.getPosition().x : jboxBodyDef.position.x;
+		return attached ? jboxBody.getPosition().x*PIXELS_PER_METER : jboxBodyDef.position.x*PIXELS_PER_METER;
 	}
 
 	
@@ -193,7 +196,7 @@ abstract public class Body<T> {
 	 * @return The y position of the body
 	 */
 	public float getY() {
-		return attached ? jboxBody.getPosition().y : jboxBodyDef.position.y;
+		return attached ? jboxBody.getPosition().y*PIXELS_PER_METER : jboxBodyDef.position.y*PIXELS_PER_METER;
 	}
 	
 	/**
@@ -202,7 +205,7 @@ abstract public class Body<T> {
 	 */
 	public float getLocalX(){
 		assertBodyAttached();
-		return jboxBody.getLocalCenter().x;
+		return jboxBody.getLocalCenter().x*PIXELS_PER_METER;
 	}
 	
 	/**
@@ -211,7 +214,7 @@ abstract public class Body<T> {
 	 */
 	public float getLocalY(){
 		assertBodyAttached();
-		return jboxBody.getLocalCenter().y;
+		return jboxBody.getLocalCenter().y*PIXELS_PER_METER;
 	}
 	
 	/**
@@ -362,7 +365,7 @@ abstract public class Body<T> {
 	 */
 	public void setPosition(float x, float y) {
 		assertBodyAttached();
-		jboxBody.setTransform(new Vec2(x,y), jboxBody.getAngle());
+		jboxBody.setTransform(new Vec2(x*METERS_PER_PIXEL,y*METERS_PER_PIXEL), jboxBody.getAngle());
 	}
 	
 	/**
@@ -497,6 +500,10 @@ abstract public class Body<T> {
 				bodyAABB.upperBound.y = shapeAABB.upperBound.y;
 			}
 		}
+		bodyAABB.lowerBound.x=bodyAABB.lowerBound.x*PIXELS_PER_METER;
+		bodyAABB.lowerBound.y=bodyAABB.lowerBound.y*PIXELS_PER_METER;
+		bodyAABB.upperBound.x=bodyAABB.upperBound.x*PIXELS_PER_METER;
+		bodyAABB.upperBound.y=bodyAABB.upperBound.y*PIXELS_PER_METER;
 		return BoundingBox.fromAABB(bodyAABB);
 	}
 	

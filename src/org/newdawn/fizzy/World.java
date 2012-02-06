@@ -41,6 +41,13 @@ public class World {
 		DESTROY
 	}
 
+	/** The amount by which to scale this engine so that it
+	 * can work reasonably in pixels */
+	protected static float PIXELS_PER_METER = 10f;
+	/** The amount by which to scale this engine so that it
+	 * can work reasonably in pixels*/
+	protected static float METERS_PER_PIXEL = 1f/PIXELS_PER_METER;
+	
 	/** The default gravity applied if none is specified (-10) */
 	public static final float DEFAULT_GRAVITY = -10f;
 	/**
@@ -296,7 +303,7 @@ public class World {
 	 *            y-coordinate of upper-right coordinate
 	 */
 	public void setBounds(float x1, float y1, float x2, float y2) {
-		worldAABB = new AABB(new Vec2(x1, y1), new Vec2(x2, y2));
+		worldAABB = new AABB(new Vec2(x1*METERS_PER_PIXEL, y1*METERS_PER_PIXEL), new Vec2(x2*METERS_PER_PIXEL, y2*METERS_PER_PIXEL));
 		outOfBoundsRegions = new AABB[] {
 				// everything below-left and directly left of worldAABB
 				new AABB(new Vec2(Float.MIN_VALUE, Float.MIN_VALUE), new Vec2(
@@ -341,18 +348,18 @@ public class World {
 	public List<Body<?>> bodiesAt(float x1, float y1, float x2, float y2) {
 		float lowerX, upperX, lowerY, upperY;
 		if (x1 < x2) {
-			lowerX = x1;
-			upperX = x2;
+			lowerX = x1*METERS_PER_PIXEL;
+			upperX = x2*METERS_PER_PIXEL;
 		} else {
-			lowerX = x2;
-			upperX = x1;
+			lowerX = x2*METERS_PER_PIXEL;
+			upperX = x1*METERS_PER_PIXEL;
 		}
 		if (y1 < y2) {
-			lowerY = y1;
-			upperY = y2;
+			lowerY = y1*METERS_PER_PIXEL;
+			upperY = y2*METERS_PER_PIXEL;
 		} else {
-			lowerY = y2;
-			upperY = y1;
+			lowerY = y2*METERS_PER_PIXEL;
+			upperY = y1*METERS_PER_PIXEL;
 		}
 
 		AABB aabb = new AABB(new Vec2(lowerX, lowerY), new Vec2(upperX, upperY));
@@ -531,5 +538,25 @@ public class World {
 	 */
 	public void setGravity(float xGravity, float yGravity) {
 		jboxWorld.setGravity(new Vec2(xGravity, yGravity));
+	}
+
+	/**returns the scaling between meters and pixels*/
+	public static float getPixelsPerMeter(){
+		return PIXELS_PER_METER;
+	}
+	
+	/**returns the scaling between pixels and meters*/
+	public static float getMetersPerPixel(){
+		return METERS_PER_PIXEL;
+	}
+	
+	/**Use with extreme caution!  All of the scaling will be done by this
+	 * new standard, but any measurements that have already been made will
+	 * use the previous scaling between pixels and meters.  Note also that
+	 * this will affect all worlds.  Any scaling that needs to vary between
+	 * worlds should be implemented separately*/
+	public static void changePixelsPerMeter(float PixelsPerMeter){
+		PIXELS_PER_METER = PixelsPerMeter;
+		METERS_PER_PIXEL = 1f/PIXELS_PER_METER;
 	}
 }
