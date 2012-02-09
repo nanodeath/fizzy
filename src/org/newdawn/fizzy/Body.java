@@ -173,11 +173,46 @@ abstract public class Body<T> {
 	 * affecting the linear velocity of the center of mass. This wakes up the
 	 * body.
 	 * 
-	 * @param torque about the z-axis (out of the screen), usually in N-m.
+	 * @param torque about the z-axis (out of the screen), usually in N.
 	 */
 	public void applyTorque(float torque){
 		assertBodyAttached();
 		jboxBody.applyTorque(torque);
+	}
+	
+	
+	/**apply an impulse to the body at it's center*/
+	public void applyImpulse(float xMagnitude, float yMagnitude){
+		assertBodyAttached();
+		jboxBody.applyLinearImpulse(new Vec2(xMagnitude,yMagnitude), jboxBody.getWorldCenter());
+	}
+	
+	/**apply an impulse to the body at an arbitrary location 
+	 * 
+	 * @param xMagnitude impulse strength on the X axis
+	 * @param yMagnitude impulse strength on the Y axis
+	 * @param xAt The x-coordinate at which to apply the impulse
+	 * @param yAt The y-coordinate at which to apply the impulse
+	 * @param isLocalPoint if true, assume the *At params are local to the body.  otherwise, they're world coordinates.
+	 */
+	public void applyImpulse(float xMagnitude, float yMagnitude, float xAt, float yAt, boolean isLocalPoint){
+		assertBodyAttached();
+		Vec2 position = new Vec2(xAt*METERS_PER_PIXEL, yAt*METERS_PER_PIXEL);
+		if(isLocalPoint)
+			position = jboxBody.getWorldPoint(position);
+		jboxBody.applyLinearImpulse(new Vec2(xMagnitude, yMagnitude), position);
+	}
+	
+	/**
+	 * (from JBox2d): Apply an impulse. This affects the angular velocity without
+	 * affecting the linear velocity of the center of mass. This wakes up the
+	 * body.
+	 * 
+	 * @param impulse about the z-axis (out of the screen), in newton*seconds.
+	 */
+	public void applyAngularImpulse(float angularImpulse){
+		assertBodyAttached();
+		jboxBody.applyAngularImpulse(angularImpulse);
 	}
 	
 	/**
