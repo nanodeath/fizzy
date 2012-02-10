@@ -17,6 +17,7 @@ public interface Shape {
 	/** The default friction applied to shapes if none is specified (0.1f) */
 	public static final float DEFAULT_FRICTION = 0.1f;
 	
+	
 	/**
 	 * The body this shape is being used in if any 
 	 * 
