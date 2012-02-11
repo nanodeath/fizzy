@@ -41,6 +41,17 @@ public class World {
 		DESTROY
 	}
 
+	/**
+	 * The amount by which to scale this engine so that it can work reasonably
+	 * in pixels
+	 */
+	protected static float PIXELS_PER_METER = 10f;
+	/**
+	 * The amount by which to scale this engine so that it can work reasonably
+	 * in pixels
+	 */
+	protected static float METERS_PER_PIXEL = 1f / PIXELS_PER_METER;
+
 	/** The default gravity applied if none is specified (-10) */
 	public static final float DEFAULT_GRAVITY = -10f;
 	/**
@@ -185,31 +196,30 @@ public class World {
 		 * Only continue if: a) out of bounds is defined, and b) either a
 		 * callback or a non-NONE out of bounds behavior is set
 		 */
-		if (outOfBoundsRegions == null
-				|| (outOfBoundsBehavior != OutOfBoundsBehavior.NONE || outOfBoundsCallback != null))
-			return;
-		Collection<Body<?>> bodies = new LinkedList<Body<?>>();
-		QueryCallback queryCallback = new BodyQueryCallbackHelper(bodies);
-		for (AABB region : outOfBoundsRegions) {
-			jboxWorld.queryAABB(queryCallback, region);
-		}
-
-		if (outOfBoundsCallback != null) {
-			boolean continueProcessing = outOfBoundsCallback
-					.reportBodies(bodies);
-			if (!continueProcessing) {
-				return;
+		if ((outOfBoundsRegions != null && (outOfBoundsBehavior != OutOfBoundsBehavior.NONE || outOfBoundsCallback != null))) {
+			Collection<Body<?>> bodies = new LinkedList<Body<?>>();
+			QueryCallback queryCallback = new BodyQueryCallbackHelper(bodies);
+			for (AABB region : outOfBoundsRegions) {
+				jboxWorld.queryAABB(queryCallback, region);
 			}
-		}
-		if (outOfBoundsBehavior != OutOfBoundsBehavior.NONE) {
-			for (Body<?> body : bodies) {
-				switch (outOfBoundsBehavior) {
-				case DEACTIVATE:
-					body.jboxBody.setActive(false);
-					break;
-				case DESTROY:
-					remove(body);
-					break;
+
+			if (outOfBoundsCallback != null) {
+				boolean continueProcessing = outOfBoundsCallback
+						.reportBodies(bodies);
+				if (!continueProcessing) {
+					return;
+				}
+			}
+			if (outOfBoundsBehavior != OutOfBoundsBehavior.NONE) {
+				for (Body<?> body : bodies) {
+					switch (outOfBoundsBehavior) {
+					case DEACTIVATE:
+						body.jboxBody.setActive(false);
+						break;
+					case DESTROY:
+						remove(body);
+						break;
+					}
 				}
 			}
 		}
@@ -296,7 +306,9 @@ public class World {
 	 *            y-coordinate of upper-right coordinate
 	 */
 	public void setBounds(float x1, float y1, float x2, float y2) {
-		worldAABB = new AABB(new Vec2(x1, y1), new Vec2(x2, y2));
+		worldAABB = new AABB(new Vec2(x1 * METERS_PER_PIXEL, y1
+				* METERS_PER_PIXEL), new Vec2(x2 * METERS_PER_PIXEL, y2
+				* METERS_PER_PIXEL));
 		outOfBoundsRegions = new AABB[] {
 				// everything below-left and directly left of worldAABB
 				new AABB(new Vec2(Float.MIN_VALUE, Float.MIN_VALUE), new Vec2(
@@ -314,26 +326,29 @@ public class World {
 
 	/**
 	 * Return a list of all the bodies at the given position.
-	 * @param x world x coordinate
-	 * @param y world y coordinate
+	 * 
+	 * @param x
+	 *            world x coordinate
+	 * @param y
+	 *            world y coordinate
 	 * @return list of bodies at provided coordinate
 	 */
 	public List<Body<?>> bodiesAt(float x, float y) {
 		return bodiesAt(x, y, x + 1f, y + 1f);
 	}
 
-//	public List<Body<?>> bodiesAt(float x, float y, float radius) {
-//		List<Body<?>> bodies = bodiesAt(x - radius, y - radius, x + radius, y
-//				+ radius);
-//		Iterator<Body<?>> it = bodies.iterator();
-//		while (it.hasNext()) {
-//			Body<?> body = it.next();
-//			if (Math.hypot(x - body.getX(), y - body.getY()) > radius) {
-//				it.remove();
-//			}
-//		}
-//		return bodies;
-//	}
+	// public List<Body<?>> bodiesAt(float x, float y, float radius) {
+	// List<Body<?>> bodies = bodiesAt(x - radius, y - radius, x + radius, y
+	// + radius);
+	// Iterator<Body<?>> it = bodies.iterator();
+	// while (it.hasNext()) {
+	// Body<?> body = it.next();
+	// if (Math.hypot(x - body.getX(), y - body.getY()) > radius) {
+	// it.remove();
+	// }
+	// }
+	// return bodies;
+	// }
 
 	/**
 	 * Return a list of all bodies in or near the given box.
@@ -341,18 +356,18 @@ public class World {
 	public List<Body<?>> bodiesAt(float x1, float y1, float x2, float y2) {
 		float lowerX, upperX, lowerY, upperY;
 		if (x1 < x2) {
-			lowerX = x1;
-			upperX = x2;
+			lowerX = x1 * METERS_PER_PIXEL;
+			upperX = x2 * METERS_PER_PIXEL;
 		} else {
-			lowerX = x2;
-			upperX = x1;
+			lowerX = x2 * METERS_PER_PIXEL;
+			upperX = x1 * METERS_PER_PIXEL;
 		}
 		if (y1 < y2) {
-			lowerY = y1;
-			upperY = y2;
+			lowerY = y1 * METERS_PER_PIXEL;
+			upperY = y2 * METERS_PER_PIXEL;
 		} else {
-			lowerY = y2;
-			upperY = y1;
+			lowerY = y2 * METERS_PER_PIXEL;
+			upperY = y1 * METERS_PER_PIXEL;
 		}
 
 		AABB aabb = new AABB(new Vec2(lowerX, lowerY), new Vec2(upperX, upperY));
@@ -531,5 +546,27 @@ public class World {
 	 */
 	public void setGravity(float xGravity, float yGravity) {
 		jboxWorld.setGravity(new Vec2(xGravity, yGravity));
+	}
+
+	/** returns the scaling between meters and pixels */
+	public static float getPixelsPerMeter() {
+		return PIXELS_PER_METER;
+	}
+
+	/** returns the scaling between pixels and meters */
+	public static float getMetersPerPixel() {
+		return METERS_PER_PIXEL;
+	}
+
+	/**
+	 * Use with extreme caution! All of the scaling will be done by this new
+	 * standard, but any measurements that have already been made will use the
+	 * previous scaling between pixels and meters. Note also that this will
+	 * affect all worlds. Any scaling that needs to vary between worlds should
+	 * be implemented separately
+	 */
+	public static void changePixelsPerMeter(float PixelsPerMeter) {
+		PIXELS_PER_METER = PixelsPerMeter;
+		METERS_PER_PIXEL = 1f / PIXELS_PER_METER;
 	}
 }

@@ -61,7 +61,9 @@ public class Rectangle extends PolygonBasedShape {
 		super();
 		
 		def.shape = shape = new PolygonShape();
-		shape.setAsBox(width / 2, height / 2);
+		shape.setAsBox(width*World.METERS_PER_PIXEL / 2, height*World.METERS_PER_PIXEL / 2,
+				//then we set it so that the origin is at the upper left corner so people like us
+				new Vec2(+width*World.METERS_PER_PIXEL / 2, +height*World.METERS_PER_PIXEL / 2),0);
 		def.density = density;
 		def.restitution = restitution;
 		def.friction = friction;
@@ -90,6 +92,8 @@ public class Rectangle extends PolygonBasedShape {
 
 	@Override
 	protected void applyOffset(float x, float y, float angle) {
-		shape.setAsBox(width/2, height/2, new Vec2(x,y), angle);
+		shape.setAsBox(width*World.METERS_PER_PIXEL / 2, height*World.METERS_PER_PIXEL / 2,
+				//then we set it so that the origin is at the upper left corner so people like us
+				new Vec2(x*World.METERS_PER_PIXEL+(width*World.METERS_PER_PIXEL / 2), y*World.METERS_PER_PIXEL+(height*World.METERS_PER_PIXEL / 2)),0);
 	}
 }

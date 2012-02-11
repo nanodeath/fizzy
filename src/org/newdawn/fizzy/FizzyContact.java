@@ -30,7 +30,7 @@ public class FizzyContact {
 			int totalCount = getContactCount();
 			contacts = new ArrayList<Vector>(totalCount);
 			for(int i = 0; i < totalCount; i++){
-				contacts.add(Vector.fromVec2(jboxContact.getManifold().points[i].localPoint));
+				contacts.add(Vector.fromVec2(jboxContact.getManifold().points[i].localPoint.mul(World.PIXELS_PER_METER)));
 			}
 		}
 		return contacts;
